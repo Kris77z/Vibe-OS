@@ -1,0 +1,41 @@
+{
+  // Copy this into ~/.openclaw/openclaw.json and adjust model / tokens.
+  agents: {
+    defaults: {
+      workspace: "/Users/jungle/Desktop/dev/vibe-os",
+      repoRoot: "/Users/jungle/Desktop/dev/vibe-os",
+      skipBootstrap: true,
+      heartbeat: { every: "0m" },
+      models: {
+        "anthropic/claude-opus-4-6": { alias: "opus" }
+      },
+      model: {
+        primary: "anthropic/claude-opus-4-6"
+      },
+      thinkingDefault: "low",
+      verboseDefault: "off",
+      timeoutSeconds: 600
+    }
+  },
+  memory: {
+    backend: "qmd",
+    citations: "auto",
+    qmd: {
+      includeDefaultMemory: true,
+      update: {
+        interval: "5m",
+        onBoot: true,
+        waitForBootSync: false,
+        embedInterval: "60m"
+      }
+    }
+  },
+  channels: {
+    telegram: {
+      enabled: false
+      // Enable later and add:
+      // botToken: "123:abc",
+      // dmPolicy: "pairing"
+    }
+  }
+}

@@ -1,0 +1,73 @@
+# Project instance manifest for the first project-scoped OpenClaw runtime.
+
+id: vibe-os
+name: Vibe-OS
+mode: project-scoped
+owner: jungle
+description: Personal brain runtime for braindump capture, retrieval, and digestion.
+
+runtime:
+  kind: openclaw-gateway
+  profile: vibe-os
+  launch_agent_label: ai.openclaw.vibe-os
+  structured_io: true
+
+paths:
+  instance_root: /Users/openclaw-svc/instances/vibe-os
+  workspace_root: /Users/openclaw-svc/instances/vibe-os/workspace
+  state_dir: /Users/openclaw-svc/instances/vibe-os/state
+  config_path: /Users/openclaw-svc/instances/vibe-os/config/openclaw.json
+  env_file: /Users/openclaw-svc/instances/vibe-os/state/.env
+  logs_dir: /Users/openclaw-svc/instances/vibe-os/state/logs
+
+network:
+  bind: loopback
+  port: 18789
+  responses_api: true
+  supercmd_base_url: http://127.0.0.1:18789
+
+security:
+  gateway_auth_env: OPENCLAW_GATEWAY_TOKEN
+  upstream_auth_env: OPENAI_AUTH_KEY
+  sandbox_mode: all
+  sandbox_scope: agent
+  sandbox_runtime: docker
+  sandbox_image: openclaw-sandbox:bookworm-slim
+  workspace_access: rw
+  elevated_enabled: false
+  os_isolation: dedicated_service_user_recommended
+
+tool_policy:
+  profile: standard-project
+  allow:
+    - group:fs
+    - group:runtime
+    - group:sessions
+    - group:memory
+  deny:
+    - browser
+    - canvas
+    - group:automation
+    - nodes
+  workspace_only_fs: true
+
+channels:
+  enabled:
+    - supercmd
+  optional:
+    - telegram
+
+contracts:
+  request_schema: docs/contracts/task_run.request.schema.json
+  result_schema: docs/contracts/task_result_v1.schema.json
+
+write_scopes:
+  - memory/braindump.md
+  - memory/mission_log.md
+  - memory/knowledge/
+
+notes:
+  - Treat this file as instance metadata, not as OpenClaw native config.
+  - Secrets live in state/.env or other per-instance secret stores, never in git.
+  - Primary upstream model path is GPT via the custom OpenAI-compatible relay.
+  - Future projects should copy this manifest and replace ids, paths, ports, and tool policy.

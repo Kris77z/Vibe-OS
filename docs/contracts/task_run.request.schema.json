@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://vibe-os.local/contracts/task_run.request.schema.json",
+  "title": "TaskRunRequest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestId",
+    "instanceId",
+    "kind",
+    "objective",
+    "context",
+    "constraints",
+    "expectedOutput"
+  ],
+  "properties": {
+    "requestId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "instanceId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "kind": {
+      "type": "string",
+      "enum": ["brain_dump", "query", "task_run", "review", "spec_run"]
+    },
+    "objective": {
+      "type": "string",
+      "minLength": 1
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source", "workspaceRoot"],
+      "properties": {
+        "source": {
+          "type": "string",
+          "minLength": 1
+        },
+        "workspaceRoot": {
+          "type": "string",
+          "minLength": 1
+        },
+        "files": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "default": []
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      }
+    },
+    "constraints": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["maxDurationSec", "toolProfile"],
+      "properties": {
+        "readScope": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "default": []
+        },
+        "writeScope": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "default": []
+        },
+        "maxDurationSec": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "toolProfile": {
+          "type": "string",
+          "enum": ["trusted-dev", "standard-project", "restricted-review"]
+        }
+      }
+    },
+    "expectedOutput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["format", "schema"],
+      "properties": {
+        "format": {
+          "type": "string",
+          "const": "json"
+        },
+        "schema": {
+          "type": "string",
+          "const": "task_result_v1"
+        }
+      }
+    }
+  }
+}

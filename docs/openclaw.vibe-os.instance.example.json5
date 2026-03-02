@@ -1,0 +1,176 @@
+{
+  // Example project-scoped OpenClaw config for the vibe-os instance.
+  // Intended deployment:
+  // - runtime repo: /Users/openclaw-svc/runtime/openclaw
+  // - instance root: /Users/openclaw-svc/instances/vibe-os
+  // - config path:  /Users/openclaw-svc/instances/vibe-os/config/openclaw.json
+  // - state dir:    /Users/openclaw-svc/instances/vibe-os/state
+  //
+  // Required env in state/.env:
+  //   OPENCLAW_GATEWAY_TOKEN=...
+  //   OPENAI_AUTH_KEY=...
+
+  gateway: {
+    mode: "local",
+    bind: "loopback",
+    port: 18789,
+    auth: {
+      mode: "token",
+      token: "${OPENCLAW_GATEWAY_TOKEN}"
+    },
+    http: {
+      endpoints: {
+        responses: {
+          enabled: true
+        }
+      }
+    },
+    tools: {
+      deny: ["exec", "process", "browser", "canvas", "nodes", "cron", "gateway"]
+    }
+  },
+
+  logging: {
+    level: "info",
+    consoleLevel: "info",
+    consoleStyle: "pretty",
+    file: "/Users/openclaw-svc/instances/vibe-os/state/logs/openclaw.log"
+  },
+
+  env: {
+    shellEnv: {
+      enabled: false
+    }
+  },
+
+  agents: {
+    defaults: {
+      workspace: "/Users/openclaw-svc/instances/vibe-os/workspace",
+      repoRoot: "/Users/openclaw-svc/instances/vibe-os/workspace",
+      skipBootstrap: true,
+      heartbeat: { every: "0m" },
+      model: {
+        primary: "openai-relay/gpt-5.1"
+      },
+      thinkingDefault: "low",
+      verboseDefault: "off",
+      timeoutSeconds: 600,
+      sandbox: {
+        mode: "all",
+        scope: "agent",
+        workspaceAccess: "rw",
+        docker: {
+          image: "openclaw-sandbox:bookworm-slim",
+          network: "none"
+        }
+      }
+    },
+    list: [
+      {
+        id: "main",
+        default: true,
+        name: "Vibe-OS Main",
+        workspace: "/Users/openclaw-svc/instances/vibe-os/workspace",
+        sandbox: {
+          mode: "all",
+          scope: "agent",
+          workspaceAccess: "rw",
+          docker: {
+            image: "openclaw-sandbox:bookworm-slim",
+            network: "none"
+          }
+        },
+        tools: {
+          profile: "coding",
+          deny: ["browser", "canvas", "group:automation", "nodes"],
+          elevated: {
+            enabled: false
+          }
+        }
+      }
+    ]
+  },
+
+  tools: {
+    profile: "coding",
+    deny: ["browser", "canvas", "group:automation", "nodes"],
+    fs: {
+      workspaceOnly: true
+    },
+    exec: {
+      security: "deny",
+      ask: "always",
+      applyPatch: {
+        workspaceOnly: true
+      }
+    },
+    elevated: {
+      enabled: false
+    }
+  },
+
+  session: {
+    dmScope: "per-channel-peer",
+    store: "/Users/openclaw-svc/instances/vibe-os/state/agents/{agentId}/sessions/sessions.json",
+    maintenance: {
+      mode: "warn",
+      pruneAfter: "30d",
+      maxEntries: 500,
+      rotateBytes: "10mb"
+    }
+  },
+
+  memory: {
+    backend: "qmd",
+    citations: "auto",
+    qmd: {
+      includeDefaultMemory: true,
+      update: {
+        interval: "5m",
+        onBoot: true,
+        waitForBootSync: false,
+        embedInterval: "60m"
+      }
+    }
+  },
+
+  models: {
+    mode: "merge",
+    providers: {
+      "openai-relay": {
+        baseUrl: "https://ai.co.link/openai/v1",
+        apiKey: "dummy",
+        api: "openai-completions",
+        headers: {
+          "x-auth-key": "${OPENAI_AUTH_KEY}"
+        },
+        models: [
+          {
+            id: "gpt-5.1",
+            name: "GPT-5.1",
+            reasoning: true,
+            input: ["text"],
+            cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+            contextWindow: 400000,
+            maxTokens: 128000
+          },
+          {
+            id: "gpt-4o",
+            name: "GPT-4o",
+            reasoning: false,
+            input: ["text"],
+            cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+            contextWindow: 128000,
+            maxTokens: 32000
+          }
+        ]
+      }
+    }
+  },
+
+  channels: {
+    telegram: {
+      enabled: false
+    }
+  }
+}
