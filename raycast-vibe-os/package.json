@@ -1,0 +1,89 @@
+{
+  "name": "vibe-os-raycast",
+  "title": "Vibe-OS",
+  "description": "Raycast front-end for your remote OpenClaw brain",
+  "icon": "assets/icon.png",
+  "author": "jungle",
+  "license": "MIT",
+  "categories": [
+    "Productivity",
+    "Developer Tools"
+  ],
+  "platforms": [
+    "macOS"
+  ],
+  "keywords": [
+    "openclaw",
+    "vibe-os",
+    "brain",
+    "memory",
+    "raycast"
+  ],
+  "preferences": [
+    {
+      "name": "baseUrl",
+      "title": "Gateway Base URL",
+      "description": "Local tunnel or direct OpenClaw gateway URL",
+      "type": "textfield",
+      "required": true,
+      "default": "http://127.0.0.1:28789",
+      "placeholder": "http://127.0.0.1:28789"
+    },
+    {
+      "name": "gatewayToken",
+      "title": "Gateway Token",
+      "description": "Bearer token used to call /v1/responses",
+      "type": "password",
+      "required": true
+    },
+    {
+      "name": "agentId",
+      "title": "Agent ID",
+      "description": "OpenClaw agent id to talk to",
+      "type": "textfield",
+      "required": true,
+      "default": "main",
+      "placeholder": "main"
+    }
+  ],
+  "commands": [
+    {
+      "name": "ask-vibe-os",
+      "title": "Ask Vibe-OS",
+      "description": "Ask your remote OpenClaw brain a question",
+      "icon": "assets/icon.png",
+      "mode": "view"
+    },
+    {
+      "name": "dump-to-vibe-os",
+      "title": "Dump To Vibe-OS",
+      "description": "Send a quick braindump to your remote OpenClaw brain",
+      "icon": "assets/icon.png",
+      "mode": "view"
+    },
+    {
+      "name": "rewrite-with-vibe-os",
+      "title": "Rewrite With Vibe-OS",
+      "description": "Rewrite text with a concise instruction",
+      "icon": "assets/icon.png",
+      "mode": "view"
+    }
+  ],
+  "scripts": {
+    "dev": "npx ray develop",
+    "build": "npx ray build",
+    "lint": "npx ray lint"
+  },
+  "dependencies": {
+    "@raycast/api": "^1.103.0",
+    "react": "^18.3.1"
+  },
+  "devDependencies": {
+    "@raycast/eslint-config": "^1.0.11",
+    "@types/node": "^20.17.10",
+    "@types/react": "^18.3.12",
+    "eslint": "^8.57.1",
+    "prettier": "^3.4.2",
+    "typescript": "^5.7.3"
+  }
+}
