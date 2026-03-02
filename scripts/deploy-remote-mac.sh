@@ -146,8 +146,8 @@ if [ -d "$VIBE_OS_CLONE_DIR/.git" ]; then
   if [ -n "$(git status --porcelain)" ]; then
     fail "现有仓库包含未提交修改：$VIBE_OS_CLONE_DIR。请先提交或清理后再重试。"
   fi
-  git fetch --all --prune
-  git pull --ff-only origin main
+  GIT_TERMINAL_PROMPT=0 git fetch --prune --progress origin main
+  git merge --ff-only FETCH_HEAD
   success "代码已快进到 origin/main"
 else
   info "正在克隆 vibe-os 仓库到 $VIBE_OS_CLONE_DIR ..."
@@ -231,22 +231,27 @@ echo "$GATEWAY_TOKEN" > "$TOKEN_FILE"
 info "阶段 6/6：检查 Docker 沙盒 ..."
 
 SANDBOX_READY=0
+DEFAULT_SANDBOX_IMAGE="openclaw-sandbox:bookworm-slim"
 if command -v docker &>/dev/null; then
   if docker info &>/dev/null 2>&1; then
     success "Docker 正在运行"
     # 检查沙盒镜像是否已存在
-    if docker image inspect openclaw-sandbox:bookworm-slim &>/dev/null 2>&1; then
-      success "沙盒镜像 openclaw-sandbox:bookworm-slim 已存在"
+    if docker image inspect "$DEFAULT_SANDBOX_IMAGE" &>/dev/null 2>&1; then
+      success "沙盒镜像 $DEFAULT_SANDBOX_IMAGE 已存在"
       SANDBOX_READY=1
     else
-      info "沙盒镜像不存在，尝试构建 ..."
-      # 查找 OpenClaw 安装路径下的沙盒构建脚本
-      OPENCLAW_BIN=$(which openclaw)
-      OPENCLAW_DIR=$(dirname "$(dirname "$OPENCLAW_BIN")")/lib/node_modules/openclaw
-      if [ -f "$OPENCLAW_DIR/scripts/sandbox-setup.sh" ]; then
-        bash "$OPENCLAW_DIR/scripts/sandbox-setup.sh" && SANDBOX_READY=1
+      info "沙盒镜像不存在，先按 OpenClaw 默认逻辑补齐 ..."
+      if docker pull debian:bookworm-slim && docker tag debian:bookworm-slim "$DEFAULT_SANDBOX_IMAGE"; then
+        success "已通过 debian:bookworm-slim 补齐 $DEFAULT_SANDBOX_IMAGE"
+        SANDBOX_READY=1
       else
-        fail "未找到沙盒构建脚本：$OPENCLAW_DIR/scripts/sandbox-setup.sh"
+        warn "默认镜像补齐失败，尝试使用仓库内的 sandbox 构建脚本 ..."
+        OPENCLAW_SANDBOX_SCRIPT="$VIBE_OS_CLONE_DIR/openclaw/scripts/sandbox-setup.sh"
+        if [ -f "$OPENCLAW_SANDBOX_SCRIPT" ]; then
+          bash "$OPENCLAW_SANDBOX_SCRIPT" && SANDBOX_READY=1
+        else
+          fail "未找到 sandbox 构建脚本：$OPENCLAW_SANDBOX_SCRIPT"
+        fi
       fi
     fi
   else

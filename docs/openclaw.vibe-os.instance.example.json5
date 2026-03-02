@@ -121,17 +121,8 @@
   },
 
   memory: {
-    backend: "qmd",
-    citations: "auto",
-    qmd: {
-      includeDefaultMemory: true,
-      update: {
-        interval: "5m",
-        onBoot: true,
-        waitForBootSync: false,
-        embedInterval: "60m"
-      }
-    }
+    backend: "builtin",
+    citations: "auto"
   },
 
   models: {

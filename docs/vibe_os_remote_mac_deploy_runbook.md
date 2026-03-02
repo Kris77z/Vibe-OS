@@ -53,19 +53,26 @@
 - 纯 SSH / headless 上直接安装 launchd 很容易翻车
 - 当前 `vibe-os` 模板默认启用 Docker sandbox
 
-## 3.1 构建 sandbox 镜像
+## 3.1 补齐 sandbox 镜像
 
-在 OpenClaw runtime 根目录执行：
+当前 `openclaw` 对默认镜像 `openclaw-sandbox:bookworm-slim` 的逻辑，优先等价于：
 
 ```bash
-cd /Users/openclaw-svc/runtime/openclaw
-./scripts/sandbox-setup.sh
+docker pull debian:bookworm-slim
+docker tag debian:bookworm-slim openclaw-sandbox:bookworm-slim
 ```
 
 预期：
 
 - Docker 可正常工作
 - 本地已构建 `openclaw-sandbox:bookworm-slim`
+
+如果上面失败，再退回源码仓库里的脚本：
+
+```bash
+cd /path/to/vibe-os/openclaw
+./scripts/sandbox-setup.sh
+```
 
 当前 `vibe-os` 模板已禁用 browser 工具，所以暂时不需要构建 browser sandbox 镜像。
 
@@ -145,6 +152,13 @@ OPENAI_AUTH_KEY=...
 - 默认模型 = `gpt-5.1`
 
 如果部署时地址变化，再改 `models.providers.openai-relay.baseUrl`。
+
+当前 `vibe-os` memory 口径：
+
+- 默认使用 OpenClaw 内建 memory backend
+- 不要求首发部署额外安装 `qmd`
+- 先保证 braindump / memory_search / 写盘链路可用
+- 需要更强检索时，再单独引入 QMD
 
 当前 `vibe-os` sandbox 口径：
 
@@ -333,6 +347,7 @@ http://127.0.0.1:18789
 - 非流式 curl 成功
 - 流式 curl 成功
 - `openclaw gateway status` 正常
+- `openclaw doctor --repair` 跑过一轮
 - launchd 安装成功
 - SuperCmd 首轮和二轮上下文都正常
 
