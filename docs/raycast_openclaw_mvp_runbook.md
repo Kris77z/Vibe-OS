@@ -46,6 +46,14 @@ npm install
 npm run dev
 ```
 
+说明：
+
+- `raycast-vibe-os/.npmrc` 已固定使用官方 npm registry，避免继承全局 `npmmirror` 导致 Raycast 依赖安装卡住。
+- `npm run dev` 成功后，Raycast 应该能看到这三个命令：
+  - `Ask Vibe-OS`
+  - `Dump to Vibe-OS`
+  - `Rewrite with Vibe-OS`
+
 ## 5. 填扩展 Preferences
 
 打开扩展设置后，填这三项：

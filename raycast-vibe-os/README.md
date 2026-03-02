@@ -40,3 +40,8 @@ cd raycast-vibe-os
 npm install
 npm run dev
 ```
+
+Notes:
+
+- This extension pins its local npm registry to `https://registry.npmjs.org` via `.npmrc` so it does not inherit a slow or incomplete global mirror.
+- The current icon is a temporary placeholder and can be replaced later.
