@@ -31,7 +31,10 @@ export function getOpenClawPreferences(): OpenClawPreferences {
   return getPreferenceValues<OpenClawPreferences>();
 }
 
-function buildInstructions(mode: BrainMode, instructions?: string): string | undefined {
+function buildInstructions(
+  mode: BrainMode,
+  instructions?: string,
+): string | undefined {
   if (instructions?.trim()) return instructions.trim();
 
   switch (mode) {
@@ -76,7 +79,9 @@ function extractOutputText(envelope: OpenClawResponseEnvelope): string {
   return parts.join("").trim();
 }
 
-export async function callOpenClaw(options: OpenClawRequestOptions): Promise<string> {
+export async function callOpenClaw(
+  options: OpenClawRequestOptions,
+): Promise<string> {
   const prefs = getOpenClawPreferences();
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 30000);
@@ -95,7 +100,7 @@ export async function callOpenClaw(options: OpenClawRequestOptions): Promise<str
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${prefs.gatewayToken}`,
+        Authorization: `Bearer ${prefs.gatewayToken}`,
       },
       body: JSON.stringify(body),
       signal: controller.signal,
@@ -111,7 +116,9 @@ export async function callOpenClaw(options: OpenClawRequestOptions): Promise<str
 
   if (!response.ok) {
     const text = await response.text();
-    throw new Error(`OpenClaw request failed (${response.status}): ${text || response.statusText}`);
+    throw new Error(
+      `OpenClaw request failed (${response.status}): ${text || response.statusText}`,
+    );
   }
 
   const envelope = (await response.json()) as OpenClawResponseEnvelope;

@@ -1,4 +1,13 @@
-import { Action, ActionPanel, Detail, Form, Icon, openExtensionPreferences, showToast, Toast } from "@raycast/api";
+import {
+  Action,
+  ActionPanel,
+  Detail,
+  Form,
+  Icon,
+  openExtensionPreferences,
+  showToast,
+  Toast,
+} from "@raycast/api";
 import { useState } from "react";
 import { callOpenClaw } from "./lib/openclaw";
 
@@ -12,7 +21,10 @@ export default function RewriteWithVibeOsCommand() {
 
   async function submit() {
     if (!sourceText.trim()) {
-      await showToast({ style: Toast.Style.Failure, title: "Source text is empty" });
+      await showToast({
+        style: Toast.Style.Failure,
+        title: "Source text is empty",
+      });
       return;
     }
 
@@ -29,7 +41,11 @@ export default function RewriteWithVibeOsCommand() {
       setResult(nextResult);
     } catch (error) {
       const message = error instanceof Error ? error.message : "Unknown error";
-      await showToast({ style: Toast.Style.Failure, title: "Rewrite failed", message });
+      await showToast({
+        style: Toast.Style.Failure,
+        title: "Rewrite failed",
+        message,
+      });
     } finally {
       setIsLoading(false);
     }
@@ -41,9 +57,17 @@ export default function RewriteWithVibeOsCommand() {
         markdown={["```text", result, "```"].join("\n")}
         actions={
           <ActionPanel>
-            <Action title="Rewrite Again" icon={Icon.ArrowLeft} onAction={() => setResult(null)} />
+            <Action
+              title="Rewrite Again"
+              icon={Icon.ArrowLeft}
+              onAction={() => setResult(null)}
+            />
             <Action.CopyToClipboard title="Copy Result" content={result} />
-            <Action title="Open Preferences" icon={Icon.Gear} onAction={openExtensionPreferences} />
+            <Action
+              title="Open Preferences"
+              icon={Icon.Gear}
+              onAction={openExtensionPreferences}
+            />
           </ActionPanel>
         }
       />
@@ -55,8 +79,16 @@ export default function RewriteWithVibeOsCommand() {
       isLoading={isLoading}
       actions={
         <ActionPanel>
-          <Action.SubmitForm title="Rewrite With Vibe-OS" icon={Icon.Pencil} onSubmit={submit} />
-          <Action title="Open Preferences" icon={Icon.Gear} onAction={openExtensionPreferences} />
+          <Action.SubmitForm
+            title="Rewrite with Vibe-os"
+            icon={Icon.Pencil}
+            onSubmit={submit}
+          />
+          <Action
+            title="Open Preferences"
+            icon={Icon.Gear}
+            onAction={openExtensionPreferences}
+          />
         </ActionPanel>
       }
     >

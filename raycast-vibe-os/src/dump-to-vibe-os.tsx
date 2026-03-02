@@ -1,4 +1,14 @@
-import { Action, ActionPanel, closeMainWindow, Form, Icon, openExtensionPreferences, showHUD, showToast, Toast } from "@raycast/api";
+import {
+  Action,
+  ActionPanel,
+  closeMainWindow,
+  Form,
+  Icon,
+  openExtensionPreferences,
+  showHUD,
+  showToast,
+  Toast,
+} from "@raycast/api";
 import { useState } from "react";
 import { callOpenClaw } from "./lib/openclaw";
 
@@ -22,7 +32,11 @@ export default function DumpToVibeOsCommand() {
       await showHUD(reply);
     } catch (error) {
       const message = error instanceof Error ? error.message : "Unknown error";
-      await showToast({ style: Toast.Style.Failure, title: "Dump failed", message });
+      await showToast({
+        style: Toast.Style.Failure,
+        title: "Dump failed",
+        message,
+      });
     } finally {
       setIsLoading(false);
     }
@@ -33,8 +47,16 @@ export default function DumpToVibeOsCommand() {
       isLoading={isLoading}
       actions={
         <ActionPanel>
-          <Action.SubmitForm title="Dump To Vibe-OS" icon={Icon.Download} onSubmit={submit} />
-          <Action title="Open Preferences" icon={Icon.Gear} onAction={openExtensionPreferences} />
+          <Action.SubmitForm
+            title="Dump to Vibe-os"
+            icon={Icon.Download}
+            onSubmit={submit}
+          />
+          <Action
+            title="Open Preferences"
+            icon={Icon.Gear}
+            onAction={openExtensionPreferences}
+          />
         </ActionPanel>
       }
     >

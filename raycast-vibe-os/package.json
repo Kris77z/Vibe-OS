@@ -2,7 +2,7 @@
   "name": "vibe-os-raycast",
   "title": "Vibe-OS",
   "description": "Raycast front-end for your remote OpenClaw brain",
-  "icon": "assets/icon.png",
+  "icon": "icon.png",
   "author": "jungle",
   "license": "MIT",
   "categories": [
@@ -51,21 +51,21 @@
       "name": "ask-vibe-os",
       "title": "Ask Vibe-OS",
       "description": "Ask your remote OpenClaw brain a question",
-      "icon": "assets/icon.png",
+      "icon": "icon.png",
       "mode": "view"
     },
     {
       "name": "dump-to-vibe-os",
-      "title": "Dump To Vibe-OS",
+      "title": "Dump to Vibe-OS",
       "description": "Send a quick braindump to your remote OpenClaw brain",
-      "icon": "assets/icon.png",
+      "icon": "icon.png",
       "mode": "view"
     },
     {
       "name": "rewrite-with-vibe-os",
-      "title": "Rewrite With Vibe-OS",
+      "title": "Rewrite with Vibe-OS",
       "description": "Rewrite text with a concise instruction",
-      "icon": "assets/icon.png",
+      "icon": "icon.png",
       "mode": "view"
     }
   ],
