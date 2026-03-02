@@ -278,7 +278,7 @@ sandboxMode: all
 workspaceAccess: rw
 structuredIO: true
 channels:
-  - supercmd
+  - raycast
   - telegram
 ```
 
@@ -315,7 +315,7 @@ channels:
 
 - 验证项目级 workspace 隔离
 - 验证 brain-dump / retrieval / digestion 这套项目协议
-- 验证 SuperCmd 通过远程 `/v1/responses` 接入
+- 验证 Raycast 或其它客户端通过远程 `/v1/responses` 接入
 - 验证结构化任务入口可运行
 
 后续新项目应复制的是：

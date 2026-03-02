@@ -13,10 +13,10 @@ Vibe-OS 是一个基于“第一性原理”和“外脑记忆模型”打造的
 *   **数据落点：** 我们在 OpenClaw 内配置特殊的系统指令（System Prompt），要求 Agent 必须将所有用户的日常碎片输入追加写入到 `memory/braindump.md` 之中。
 
 ### 2. 专属桌面端入口 (Mac Desktop Frontend UI)
-虽然 OpenClaw 极其强大，但为了实现 Mac 上“零阻尼”的体验，我们需要一个为 Vibe-OS 专属定做的前端外壳。
-*   **表现形式：** Mac 全局快捷键唤起一个极简输入悬浮窗（类似于 Spotlight 或 Raycast）。
-*   **行为逻辑：** 这是一个纯净的“倾卸口”。你敲完一行字、按下回车，窗口立刻消失。然后这个壳子会把这句话静默传给后端的 OpenClaw，写入 `braindump.md`。
-*   **落地技术：** 极简的 Electron / Tauri，或者是轻量的原生 Mac 应用（Swift），只负责 UI 和进程通信。
+虽然 OpenClaw 极其强大，但为了实现 Mac 上“零阻尼”的体验，我们仍然需要一个为 Vibe-OS 专属定做的前端外壳。
+*   **表现形式：** Mac 全局快捷键唤起一个极简输入悬浮窗（当前主线为 Raycast 私有扩展）。
+*   **行为逻辑：** 这是一个纯净的“倾卸口”和“发问口”。你敲完一行字，前端把内容静默传给远程 OpenClaw，由它决定是追加写入 `braindump.md`，还是进入问答 / 检索模式。
+*   **落地技术：** 当前主线为 `raycast-vibe-os/`，通过本地 SSH tunnel 调远程 OpenClaw `/v1/responses`。
 
 ### 3. 消化层 (Digestion System) — “后厨与梦境整理”
 后台依托 OpenClaw 调度自动运行的 AI 逻辑，代替繁琐的手动 GTD（Getting Things Done）。
@@ -42,7 +42,7 @@ vibe-os/
 ├── AGENTS.md                # Workspace 根协议：Agent 行为边界与倾倒模式规则
 ├── MEMORY.md                # Workspace 根长期记忆：高优事项与长期准则
 ├── openclaw/                # (第三方依赖) OpenClaw 引擎源码目录
-├── SuperCmd/                # (前端候选) Mac 极简输入壳源码目录
+├── raycast-vibe-os/         # 当前桌面前端：Raycast 私有扩展
 ├── docs/                    # 落地方案、分析和本地配置样例
 ├── memory/                  # (核心) 交由 OpenClaw 管理和读取的记忆文件夹
 │   ├── braindump.md         # 最核心的无序倾倒容器（收件箱 / Context）
@@ -51,17 +51,16 @@ vibe-os/
 │   │   ├── technical.md     # 例如：关于开发框架的积淀
 │   │   └── investment.md    # 例如：关于加密货币或特定标的的长期推演
 ├── scripts/                 # 兼容性文档或后续自动化脚本
-└── desktop_app/             # (预留) 自研极简输入悬浮窗源码
 ```
 
 ---
 
 ## 🛠️ 下一步开发路径与讨论板
-> **当前状态：** 架构设计与需求共识期。
+> **当前状态：** 远程 OpenClaw + Raycast 前端已打通，后台自动整理与长期记忆链路待补。
 
 1. **基座拉取：** 部署并跑通 OpenClaw 本地环境。
 2. **打通移动端：** 将 OpenClaw 与你的 Telegram 对接，测试最初的对话能力。
-3. **注入灵魂：** 编写 `MEMORY.md` 和 `AGENTS.md`，配置 Cron 脚本，让 OpenClaw 学会如何写入 `braindump.md` 以及如何每日整理。
-4. **桌面端点缀：** 最后，用 Electron/Tauri 写一个在 Mac 上能通过全局快捷键呼出的极简输入框 UI。
+3. **注入灵魂：** 编写 `MEMORY.md` 和 `AGENTS.md`，配置自动整理链路，让 OpenClaw 学会如何写入 `braindump.md` 以及如何每日整理。
+4. **后台自动化：** 补齐 `braindump -> mission_log -> knowledge` 的消化链路，再考虑 Telegram 正式接入。
 
 （本档案将被持续更新，作为 Vibe-OS 迭代的唯一真相来源）

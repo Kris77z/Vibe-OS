@@ -1,7 +1,7 @@
 {
   "name": "vibe-os-raycast",
-  "title": "Vibe-OS",
-  "description": "Raycast front-end for your remote OpenClaw brain",
+  "title": "Vibe-OS 外脑",
+  "description": "Raycast 前端壳，连接你的远程 OpenClaw 大脑",
   "icon": "icon.png",
   "author": "jungle",
   "license": "MIT",
@@ -22,8 +22,8 @@
   "preferences": [
     {
       "name": "baseUrl",
-      "title": "Gateway Base URL",
-      "description": "Local tunnel or direct OpenClaw gateway URL",
+      "title": "网关地址",
+      "description": "本地 SSH 隧道地址或 OpenClaw 网关地址",
       "type": "textfield",
       "required": true,
       "default": "http://127.0.0.1:28789",
@@ -31,15 +31,15 @@
     },
     {
       "name": "gatewayToken",
-      "title": "Gateway Token",
-      "description": "Bearer token used to call /v1/responses",
+      "title": "网关令牌",
+      "description": "调用 /v1/responses 所需的 Bearer Token",
       "type": "password",
       "required": true
     },
     {
       "name": "agentId",
       "title": "Agent ID",
-      "description": "OpenClaw agent id to talk to",
+      "description": "要连接的 OpenClaw agent 标识",
       "type": "textfield",
       "required": true,
       "default": "main",
@@ -49,22 +49,22 @@
   "commands": [
     {
       "name": "ask-vibe-os",
-      "title": "Ask Vibe-OS",
-      "description": "Ask your remote OpenClaw brain a question",
+      "title": "问问 Vibe-OS",
+      "description": "向远程 OpenClaw 大脑发起提问",
       "icon": "icon.png",
       "mode": "view"
     },
     {
       "name": "dump-to-vibe-os",
-      "title": "Dump to Vibe-OS",
-      "description": "Send a quick braindump to your remote OpenClaw brain",
+      "title": "倾倒到 Vibe-OS",
+      "description": "快速倾倒一个想法到远程 OpenClaw 大脑",
       "icon": "icon.png",
       "mode": "view"
     },
     {
       "name": "rewrite-with-vibe-os",
-      "title": "Rewrite with Vibe-OS",
-      "description": "Rewrite text with a concise instruction",
+      "title": "用 Vibe-OS 改写",
+      "description": "按你的简洁指令改写一段文本",
       "icon": "icon.png",
       "mode": "view"
     }

@@ -4,9 +4,9 @@ Private Raycast front-end for the remote `OpenClaw`-backed Vibe-OS brain.
 
 ## Commands
 
-- `Ask Vibe-OS`: ask the remote brain a normal question
-- `Dump To Vibe-OS`: send a quick braindump and get a short confirmation back
-- `Rewrite With Vibe-OS`: rewrite text with a concise instruction
+- `问问 Vibe-OS`: ask the remote brain a normal question
+- `倾倒到 Vibe-OS`: send a quick braindump and get a short confirmation back
+- `用 Vibe-OS 改写`: rewrite text with a concise instruction
 
 ## Preferences
 
@@ -31,7 +31,7 @@ ssh -N -L 28789:127.0.0.1:18789 kris@annkimac.tail7f9f42.ts.net
 1. Keep the SSH tunnel open.
 2. Open Raycast and import or develop this extension from `raycast-vibe-os/`.
 3. Fill the three extension preferences.
-4. Run `Ask Vibe-OS` or `Dump To Vibe-OS`.
+4. Run `问问 Vibe-OS` or `倾倒到 Vibe-OS`.
 
 ## Development
 
@@ -44,4 +44,4 @@ npm run dev
 Notes:
 
 - This extension pins its local npm registry to `https://registry.npmjs.org` via `.npmrc` so it does not inherit a slow or incomplete global mirror.
-- The current icon is a temporary placeholder and can be replaced later.
+- To replace the icon later, overwrite `raycast-vibe-os/assets/icon.png` with a `512x512` PNG and rerun `npm run lint`.

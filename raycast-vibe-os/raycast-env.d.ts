@@ -8,11 +8,11 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
 type ExtensionPreferences = {
-  /** Gateway Base URL - Local tunnel or direct OpenClaw gateway URL */
+  /** 网关地址 - 本地 SSH 隧道地址或 OpenClaw 网关地址 */
   "baseUrl": string,
-  /** Gateway Token - Bearer token used to call /v1/responses */
+  /** 网关令牌 - 调用 /v1/responses 所需的 Bearer Token */
   "gatewayToken": string,
-  /** Agent ID - OpenClaw agent id to talk to */
+  /** Agent ID - 要连接的 OpenClaw agent 标识 */
   "agentId": string
 }
 

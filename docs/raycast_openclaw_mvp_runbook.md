@@ -6,9 +6,9 @@
 
 截至 2026-03-02，这条链路已经在本机实测通过：
 
-- `Ask Vibe-OS` 成功返回
-- `Dump to Vibe-OS` 成功返回短确认句 `秒存`
-- `Rewrite with Vibe-OS` 成功返回改写结果
+- `问问 Vibe-OS` 成功返回
+- `倾倒到 Vibe-OS` 成功返回短确认句 `秒存`
+- `用 Vibe-OS 改写` 成功返回改写结果
 
 因此这份 runbook 现在不只是计划文档，也是当前可复用的成功路径。
 
@@ -60,9 +60,9 @@ npm run dev
 
 - `raycast-vibe-os/.npmrc` 已固定使用官方 npm registry，避免继承全局 `npmmirror` 导致 Raycast 依赖安装卡住。
 - `npm run dev` 成功后，Raycast 应该能看到这三个命令：
-  - `Ask Vibe-OS`
-  - `Dump to Vibe-OS`
-  - `Rewrite with Vibe-OS`
+  - `问问 Vibe-OS`
+  - `倾倒到 Vibe-OS`
+  - `用 Vibe-OS 改写`
 
 ## 5. 填扩展 Preferences
 
@@ -81,7 +81,7 @@ Agent ID: main
 
 ## 6. 命令验收
 
-### Ask Vibe-OS
+### 问问 Vibe-OS
 
 输入：
 
@@ -93,7 +93,7 @@ Agent ID: main
 
 - 能返回正常回答
 
-### Dump To Vibe-OS
+### 倾倒到 Vibe-OS
 
 输入一段随手想法。
 
@@ -102,7 +102,7 @@ Agent ID: main
 - 能返回简短确认句
 - 不展开闲聊
 
-### Rewrite With Vibe-OS
+### 用 Vibe-OS 改写
 
 输入原文和改写要求。
 

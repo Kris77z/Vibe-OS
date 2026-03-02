@@ -218,7 +218,7 @@ Raycast 扩展内固定三项：
 
 ## 7. 命令设计
 
-### 命令一：Ask Vibe-OS
+### 命令一：问问 Vibe-OS
 
 形式：
 
@@ -230,7 +230,7 @@ Raycast 扩展内固定三项：
 - 发送到 `openclaw:main`
 - 展示回答
 
-### 命令二：Dump To Vibe-OS
+### 命令二：倾倒到 Vibe-OS
 
 形式：
 
@@ -242,7 +242,7 @@ Raycast 扩展内固定三项：
 - 直接发给大脑
 - 返回极简确认
 
-### 命令三：Rewrite With Vibe-OS
+### 命令三：用 Vibe-OS 改写
 
 形式：
 
@@ -299,9 +299,9 @@ Raycast 扩展内固定三项：
 
 1. 新建 `raycast-vibe-os` 私有扩展目录
 2. 写 Preferences
-3. 写 `Ask Vibe-OS`
-4. 写 `Dump To Vibe-OS`
-5. 写 `Rewrite With Vibe-OS`
+3. 写 `问问 Vibe-OS`
+4. 写 `倾倒到 Vibe-OS`
+5. 写 `用 Vibe-OS 改写`
 6. 通过本地 tunnel 调远程 OpenClaw
 
 验收标准：
@@ -353,9 +353,9 @@ Raycast 扩展内固定三项：
 最顺的执行顺序：
 
 1. 在仓库内新增一个 Raycast 私有扩展目录
-2. 实现 `Ask Vibe-OS`
-3. 实现 `Dump To Vibe-OS`
-4. 实现 `Rewrite With Vibe-OS`
+2. 实现 `问问 Vibe-OS`
+3. 实现 `倾倒到 Vibe-OS`
+4. 实现 `用 Vibe-OS 改写`
 5. 用本地 tunnel 做联调
 
 ## 12. 当前建议结论

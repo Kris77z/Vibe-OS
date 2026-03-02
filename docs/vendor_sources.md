@@ -3,13 +3,6 @@
 This repository vendors upstream source trees directly into the root workspace.
 They are tracked here as ordinary directories, not as submodules.
 
-## SuperCmd
-
-- Upstream: `https://github.com/SuperCmdLabs/SuperCmd.git`
-- Imported branch: `main`
-- Imported base commit: `51fade08730d24a6ab0f7de3460bd6aef86d7135`
-- Local status at import time: contains workspace-specific modifications for OpenClaw integration
-
 ## OpenClaw
 
 - Upstream: `https://github.com/openclaw/openclaw.git`
@@ -19,7 +12,7 @@ They are tracked here as ordinary directories, not as submodules.
 
 ## Update Policy
 
-Treat both directories as vendored upstream snapshots.
+Treat vendored directories as upstream snapshots.
 
 Recommended future update flow:
 
@@ -29,4 +22,4 @@ Recommended future update flow:
 4. Re-test Vibe-OS integration points.
 5. Update this file with the new pinned commit.
 
-Do not run `git pull` inside `SuperCmd/` or `openclaw/` after this repository is initialized as the canonical root repo.
+Do not run `git pull` inside vendored directories after this repository is initialized as the canonical root repo.

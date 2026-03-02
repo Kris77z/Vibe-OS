@@ -15,7 +15,7 @@
 1. `vibe-os` 拥有独立 workspace
 2. `vibe-os` 拥有独立 state dir / config / token / logs
 3. gateway 开放 `/v1/responses`
-4. SuperCmd 可以通过远程地址连到它
+4. Raycast 或任意 `/v1/responses` 客户端可以通过远程地址连到它
 5. 后续可以直接挂 launchd 常驻
 
 ## 2. 推荐部署布局
@@ -321,38 +321,45 @@ openclaw doctor --repair
 - 收敛 state / config 权限告警
 - 不再出现明显的 sandbox / gateway 基础配置错误
 
-## 11. SuperCmd 联调
+## 11. 客户端联调
 
-部署机准备完成后，开发机上的 SuperCmd 填：
+部署机准备完成后，开发机上的 Raycast 或其它客户端填：
 
-1. `Provider = OpenClaw`
-2. `Gateway Base URL = 远端部署机可达地址`
-3. `Gateway Token = OPENCLAW_GATEWAY_TOKEN`
-4. `Agent ID = main`
+1. `Gateway Base URL = 开发机本地 tunnel 地址`
+2. `Gateway Token = OPENCLAW_GATEWAY_TOKEN`
+3. `Agent ID = main`
 
-不要误填本机 `127.0.0.1`，除非你正在走 SSH tunnel。
+如果是 Raycast 当前主线，推荐值就是：
+
+```text
+Gateway Base URL = http://127.0.0.1:28789
+Agent ID = main
+```
 
 ## 12. 推荐远程访问方式
 
-### 12.1 Tailscale
+### 12.1 Tailscale + SSH Tunnel
 
-如果两台 Mac 在同一 tailnet：
+如果两台 Mac 在同一 tailnet，优先保留：
 
-- 直接使用部署机 tailnet IP 或域名
-- 仍然保留 token auth
+- `gateway.bind = "loopback"`
+- token auth
+- SSH tunnel
+
+不要为了省事直接把 gateway 暴露到 tailnet 或局域网。
 
 ### 12.2 SSH Tunnel
 
-如果先不想暴露端口：
+开发机执行：
 
 ```bash
-ssh -N -L 18789:127.0.0.1:18789 user@remote-mac
+ssh -N -L 28789:127.0.0.1:18789 user@remote-mac
 ```
 
-此时开发机上的 SuperCmd 可以临时填：
+此时开发机上的 Raycast 或其它客户端填：
 
 ```text
-http://127.0.0.1:18789
+http://127.0.0.1:28789
 ```
 
 ## 13. 执行输出要求
@@ -384,7 +391,8 @@ http://127.0.0.1:18789
 - `openclaw gateway status` 正常
 - `openclaw doctor --repair` 跑过一轮
 - launchd 安装成功
-- SuperCmd 首轮和二轮上下文都正常
+- 客户端首轮请求正常
+- 客户端 `倾倒` / `发问` 行为正常
 
 ## 15. 当前不做的事
 
@@ -392,7 +400,94 @@ http://127.0.0.1:18789
 
 - Telegram 正式接入
 - 定时 digestion 任务上线
-- 多项目统一编排
 - 容器化隔离
 
 这些后面再单独做，不和 `vibe-os` 首次部署绑一起。
+
+## 16. 联调经验补充
+
+这轮真实部署和联调里，已经验证过的经验如下：
+
+1. **首发不要上 QMD**
+   - 先用 `memory.backend = "builtin"`
+   - 先把部署、写盘、Responses API 和客户端打通
+   - QMD 放到第二阶段单独上
+
+2. **sandbox 镜像优先 pull + tag**
+   - 当前最稳的是：
+   ```bash
+   docker pull debian:bookworm-slim
+   docker tag debian:bookworm-slim openclaw-sandbox:bookworm-slim
+   ```
+   - 不要先假设全局安装目录里一定有 `sandbox-setup.sh`
+
+3. **远程访问优先走 Tailscale + SSH Tunnel**
+   - 当前稳定口径不是直连端口
+   - 而是：
+   ```bash
+   ssh -N -L 28789:127.0.0.1:18789 kris@annkimac.tail7f9f42.ts.net
+   ```
+
+4. **`/v1/responses` 成功比 `gateway status` 更重要**
+   - `gateway status` 只能证明 gateway 活着
+   - 真正联调是否完成，必须看：
+     - 非流式 curl
+     - 流式 curl
+     - 客户端真实请求
+
+5. **客户端主线已经切到 Raycast**
+   - 当前桌面主入口已经不是 SuperCmd
+   - 当前已实测跑通：
+     - `问问 Vibe-OS`
+     - `倾倒到 Vibe-OS`
+     - `用 Vibe-OS 改写`
+
+## 17. 在同一台部署机上再部署另一个项目
+
+同一台 Mac 可以继续部署第二个项目，但必须遵守“项目级实例隔离”：
+
+1. 新项目独立 `instance_root`
+2. 新项目独立 `workspace_root`
+3. 新项目独立 `state_dir`
+4. 新项目独立 `config_path`
+5. 新项目独立 `OPENCLAW_GATEWAY_TOKEN`
+6. 新项目独立 `gateway.port`
+7. 新项目独立 `launchd` label
+
+建议直接沿用当前目录模式：
+
+```text
+/Users/openclaw-svc/instances/vibe-os/
+/Users/openclaw-svc/instances/next-project/
+```
+
+建议端口至少错开 100：
+
+```text
+vibe-os      18789
+next-project 18889
+```
+
+复用规则：
+
+- **可以复用**
+  - 同一台专用 Mac
+  - 同一服务账号
+  - 同一个 OpenClaw runtime checkout
+  - 同一个 Docker runtime
+
+- **不能复用**
+  - workspace
+  - state dir
+  - config
+  - token
+  - logs
+  - launchd service label
+
+如果后面要让 LLM 在部署机上照着做，最重要的是让它先复制当前实例，再替换：
+
+- `id`
+- `paths`
+- `port`
+- `token`
+- `workspace`

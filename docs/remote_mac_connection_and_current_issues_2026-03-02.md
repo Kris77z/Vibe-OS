@@ -203,7 +203,7 @@ OpenClaw 再访问上游 relay：
 
 问题记录：
 
-- [`/Users/kris/Desktop/Dev/Vibe-OS/docs/remote_mac_deploy_issues_2026-03-02.md`](/Users/kris/Desktop/Dev/Vibe-OS/docs/remote_mac_deploy_issues_2026-03-02.md)
+- [`/Users/kris/Desktop/Dev/Vibe-OS/docs/archive/2026-03/remote_mac_deploy_issues_2026-03-02.md`](/Users/kris/Desktop/Dev/Vibe-OS/docs/archive/2026-03/remote_mac_deploy_issues_2026-03-02.md)
 
 ## 6. 当前可操作结论
 
