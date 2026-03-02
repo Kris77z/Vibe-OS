@@ -2,6 +2,16 @@
 
 目标：在当前开发机上，把 `raycast-vibe-os` 扩展接到已经跑通的远程 `OpenClaw` 实例。
 
+## 0. 当前验证状态
+
+截至 2026-03-02，这条链路已经在本机实测通过：
+
+- `Ask Vibe-OS` 成功返回
+- `Dump to Vibe-OS` 成功返回短确认句 `秒存`
+- `Rewrite with Vibe-OS` 成功返回改写结果
+
+因此这份 runbook 现在不只是计划文档，也是当前可复用的成功路径。
+
 ## 1. 前提
 
 - 远程 `OpenClaw gateway` 已可用
