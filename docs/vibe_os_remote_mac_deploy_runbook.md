@@ -159,6 +159,7 @@ OPENAI_AUTH_KEY=...
 - 不要求首发部署额外安装 `qmd`
 - 先保证 braindump / memory_search / 写盘链路可用
 - 需要更强检索时，再单独引入 QMD
+- 首发部署时不要额外安装或启用 `qmd`
 
 当前 `vibe-os` sandbox 口径：
 
@@ -302,6 +303,24 @@ openclaw gateway status
 - `OPENCLAW_CONFIG_PATH`
 - workspace 路径
 
+## 10.1 跑一轮 doctor 修复
+
+在前台验证通过、安装 launchd 之后，再跑一轮：
+
+```bash
+cd /Users/openclaw-svc/runtime/openclaw
+OPENCLAW_PROFILE=vibe-os \
+OPENCLAW_STATE_DIR=/Users/openclaw-svc/instances/vibe-os/state \
+OPENCLAW_CONFIG_PATH=/Users/openclaw-svc/instances/vibe-os/config/openclaw.json \
+openclaw doctor --repair
+```
+
+目标：
+
+- 修复或创建缺失的运行目录
+- 收敛 state / config 权限告警
+- 不再出现明显的 sandbox / gateway 基础配置错误
+
 ## 11. SuperCmd 联调
 
 部署机准备完成后，开发机上的 SuperCmd 填：
@@ -336,7 +355,23 @@ ssh -N -L 18789:127.0.0.1:18789 user@remote-mac
 http://127.0.0.1:18789
 ```
 
-## 13. 上线前检查清单
+## 13. 执行输出要求
+
+如果这份 runbook 由 Claude / Codex 在远程机上执行，完成后至少要汇报：
+
+- 实际实例路径
+- 实际 workspace 路径
+- 实际 config 路径
+- 实际 state 路径
+- sandbox 镜像是否已就绪
+- `openclaw sandbox explain` 结果
+- `openclaw gateway status` 结果
+- `/v1/responses` 非流式验证结果
+- `/v1/responses` 流式验证结果
+- `openclaw doctor --repair` 结果
+- 任何阻塞点
+
+## 14. 上线前检查清单
 
 - workspace 路径正确
 - `AGENTS.md` 已加载
@@ -351,7 +386,7 @@ http://127.0.0.1:18789
 - launchd 安装成功
 - SuperCmd 首轮和二轮上下文都正常
 
-## 14. 当前不做的事
+## 15. 当前不做的事
 
 这份 runbook 暂时不覆盖：
 
