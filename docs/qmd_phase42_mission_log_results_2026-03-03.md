@@ -1,8 +1,8 @@
 # QMD Phase 4.2 实验结果：Mission Log（2026-03-03）
 
 > 目的：记录这轮在部署机 live instance 上完成的 `mission_log` 白名单实验结论。
-> 上位实验计划见 [qmd_phase2_experiment_plan.md](/Users/kris/Desktop/Dev/Vibe-OS/docs/qmd_phase2_experiment_plan.md)。
-> 执行 runbook 见 [qmd_phase42_mission_log_experiment_runbook.md](/Users/kris/Desktop/Dev/Vibe-OS/docs/qmd_phase42_mission_log_experiment_runbook.md)。
+> 上位实验计划见 [qmd_phase2_experiment_plan.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_phase2_experiment_plan.md)。
+> 执行 runbook 见 [qmd_phase42_mission_log_experiment_runbook.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_phase42_mission_log_experiment_runbook.md)。
 
 日期：2026-03-03
 
@@ -231,6 +231,6 @@ candidate：
 开发机后续优先看这两件事：
 
 1. `remote digestion` 这类 query 是否应该优先知识结果，而不是 TODO 结果
-2. 是否要对 mission_log 内容做更细粒度切分、去噪或权重控制，而不是整文件直接纳入
+2. 是否要对 mission_log 内容做更细粒度切分、去噪或导出 task-memory 子集，而不是整文件直接纳入
 
 在没有进一步调优前，不建议基于这一轮就得出“mission_log 一定该永久纳入 live”的最终结论。

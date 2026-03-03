@@ -4,7 +4,7 @@
 > 总蓝图见 [implementation_plan.md](/Users/jungle/Desktop/dev/vibe-os/docs/implementation_plan.md)。
 > 下一阶段实验项见 [qmd_phase2_experiment_plan.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_phase2_experiment_plan.md)。
 > `search vs query` 第一轮实验结果见 [qmd_phase42_search_vs_query_results_2026-03-03.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_phase42_search_vs_query_results_2026-03-03.md)。
-> `mission_log` 实验结果见 [qmd_phase42_mission_log_results_2026-03-03.md](/Users/kris/Desktop/Dev/Vibe-OS/docs/qmd_phase42_mission_log_results_2026-03-03.md)。
+> `mission_log` 实验结果见 [qmd_phase42_mission_log_results_2026-03-03.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_phase42_mission_log_results_2026-03-03.md)。
 
 日期：2026-03-03
 

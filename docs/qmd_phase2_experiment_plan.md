@@ -6,7 +6,7 @@
 > Phase 4.2 第一轮 `search vs query` 实验结果见：
 > [qmd_phase42_search_vs_query_results_2026-03-03.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_phase42_search_vs_query_results_2026-03-03.md)
 > Phase 4.2 `mission_log` 实验结果见：
-> [qmd_phase42_mission_log_results_2026-03-03.md](/Users/kris/Desktop/Dev/Vibe-OS/docs/qmd_phase42_mission_log_results_2026-03-03.md)
+> [qmd_phase42_mission_log_results_2026-03-03.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_phase42_mission_log_results_2026-03-03.md)
 
 日期：2026-03-03
 
@@ -210,6 +210,13 @@ node scripts/qmd_compare_eval_reports.mjs \
 - `run_remote_digestion.mjs` 仍未改善
 - 暂未看到 `AI Native / OpenClaw gateway` 这类高价值 query 被明显污染
 - 结论偏正面，但还不足以下“必须永久纳入 live”的最终判断
+- 下一步优先做 `mission_log` 的切片/去噪实验，而不是直接接受“整文件永久纳入”
+
+推荐下一轮方向：
+
+1. 从 `mission_log` 导出更高密度的 task-memory 子集，而不是整文件直灌
+2. 把“开放任务 / 跟进项 / 已完成事项”拆开，避免 TODO 语气挤占知识结果
+3. 保持 `search` 模式不变，只比较索引源切片策略
 
 ---
 
