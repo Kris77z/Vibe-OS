@@ -3,8 +3,9 @@
 > 目的：记录这轮在本机真实实例上的 QMD enablement、live 切换与召回质量验证结论，供后续开发机评估与迭代使用。
 > 总蓝图见 [implementation_plan.md](/Users/jungle/Desktop/dev/vibe-os/docs/implementation_plan.md)。
 > 下一阶段实验项见 [qmd_phase2_experiment_plan.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_phase2_experiment_plan.md)。
-> `search vs query` 第一轮实验结果见 [qmd_phase42_search_vs_query_results_2026-03-03.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_phase42_search_vs_query_results_2026-03-03.md)。
-> `mission_log` 实验结果见 [qmd_phase42_mission_log_results_2026-03-03.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_phase42_mission_log_results_2026-03-03.md)。
+> `search vs query` 第一轮实验结果见 [qmd_phase42_search_vs_query_results_2026-03-03.md](/Users/jungle/Desktop/dev/vibe-os/docs/archive/2026-03/qmd_phase42_search_vs_query_results_2026-03-03.md)。
+> `mission_log` 实验结果见 [qmd_phase42_mission_log_results_2026-03-03.md](/Users/jungle/Desktop/dev/vibe-os/docs/archive/2026-03/qmd_phase42_mission_log_results_2026-03-03.md)。
+> 归档说明：这份文档保留为 2026-03-03 的 live 验证快照，不再作为当前执行入口。
 
 日期：2026-03-03
 

@@ -4,7 +4,7 @@
 
 文档文件路径：
 
-- `/Users/kris/Desktop/Dev/Vibe-OS/docs/remote_mac_connection_and_current_issues_2026-03-02.md`
+- `/Users/jungle/Desktop/dev/vibe-os/docs/archive/2026-03/remote_mac_connection_and_current_issues_2026-03-02.md`
 
 ## 1. 当前状态
 

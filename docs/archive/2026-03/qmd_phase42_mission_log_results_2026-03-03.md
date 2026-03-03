@@ -3,6 +3,7 @@
 > 目的：记录这轮在部署机 live instance 上完成的 `mission_log` 白名单实验结论。
 > 上位实验计划见 [qmd_phase2_experiment_plan.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_phase2_experiment_plan.md)。
 > 执行 runbook 见 [qmd_phase42_mission_log_experiment_runbook.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_phase42_mission_log_experiment_runbook.md)。
+> 归档说明：这份文档保留为 `mission_log` 整文件纳入实验记录，当前主线已转回官方 memory 层。
 
 日期：2026-03-03
 

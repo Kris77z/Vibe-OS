@@ -9,7 +9,7 @@
 
 当前主线已经从“抽象蓝图”进入“分阶段落地 + 文档拆分”的状态，因此这里不再只写理想方案，也同步维护真实进度。
 
-基于“不重复造轮子”的第一性原理，当前核心架构口径是：**OpenClaw 提供 Agent 底座与记忆引擎 + Raycast 作为桌面主入口 + Telegram 继续后置 + QMD 已在部署机 live 跑通，下一阶段主线切到召回质量调优**。
+基于“不重复造轮子”的第一性原理，当前核心架构口径是：**OpenClaw 提供 Agent 底座与记忆引擎 + Raycast 作为桌面主入口 + Telegram 继续后置 + QMD 已在部署机 live 跑通，下一阶段主线切到 OpenClaw 官方 memory 层落盘与 digestion 输出收敛**。
 
 ---
 
@@ -120,7 +120,7 @@
 - Digestion MVP 已完成，可收阶段
 - QMD 已在部署机 live 跑通
 - Telegram 仍后置
-- 下一阶段主线切到 `QMD retrieval tuning`
+- 下一阶段主线切到 `OpenClaw 官方 memory 层`
 
 ### 2026-03-03 正在推进的阶段
 
@@ -136,7 +136,7 @@
 
 - [qmd_enablement_plan.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_enablement_plan.md)
 - [qmd_minimal_enablement_runbook.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_minimal_enablement_runbook.md)
-- [qmd_live_validation_findings_2026-03-03.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_live_validation_findings_2026-03-03.md)
+- [qmd_live_validation_findings_2026-03-03.md](/Users/jungle/Desktop/dev/vibe-os/docs/archive/2026-03/qmd_live_validation_findings_2026-03-03.md)
 - [qmd_phase2_experiment_plan.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_phase2_experiment_plan.md)
 
 对应代码 / 脚本：
@@ -144,6 +144,23 @@
 - [check_qmd_prereqs.sh](/Users/jungle/Desktop/dev/vibe-os/scripts/check_qmd_prereqs.sh)
 - [qmd_smoke_test.sh](/Users/jungle/Desktop/dev/vibe-os/scripts/qmd_smoke_test.sh)
 - [openclaw.vibe-os.instance.qmd-overlay.example.json5](/Users/jungle/Desktop/dev/vibe-os/docs/openclaw.vibe-os.instance.qmd-overlay.example.json5)
+
+当前判断：
+
+- QMD enablement 基线已完成
+- `query` 不适合当前默认交互路径
+- 后续不再继续扩自定义 retrieval 架构，主线改为把 digestion 输出收敛到 OpenClaw 官方 memory 层
+
+#### E. OpenClaw 官方 Memory 层收敛
+
+- 已明确后续主线不再追求更重的 memory infrastructure
+- 已明确 `braindump / MEMORY / daily memory / knowledge / mission_log` 的角色边界
+- 下一步重点是写清 memory 写入规范，并让 digestion 稳定产出 `memory/YYYY-MM-DD.md`
+
+对应文档：
+
+- [openclaw_memory_layer_plan.md](/Users/jungle/Desktop/dev/vibe-os/docs/openclaw_memory_layer_plan.md)
+- [openclaw/docs/concepts/memory.md](/Users/jungle/Desktop/dev/vibe-os/openclaw/docs/concepts/memory.md)
 
 ---
 
@@ -199,13 +216,14 @@
 
 - [qmd_enablement_plan.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_enablement_plan.md)
 - [qmd_minimal_enablement_runbook.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_minimal_enablement_runbook.md)
-- [qmd_live_validation_findings_2026-03-03.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_live_validation_findings_2026-03-03.md)
+- [qmd_live_validation_findings_2026-03-03.md](/Users/jungle/Desktop/dev/vibe-os/docs/archive/2026-03/qmd_live_validation_findings_2026-03-03.md)
 - [qmd_phase2_experiment_plan.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_phase2_experiment_plan.md)
 
 当前状态：
 
 - 阶段四 baseline 已完成
-- 下一步进入阶段四第二子阶段：召回质量调优与索引白名单扩展
+- 后续只保留官方配置面上的最小验证
+- 主线不再继续扩 QMD retrieval tuning，而是切到官方 memory 层写盘策略
 
 ### 阶段五：移动端入口与长期运维 (Telegram / Ops)
 *目标：补齐移动端入口与长期稳定性。*
@@ -223,9 +241,10 @@
 现在最合理的下一步是：
 
 1.  保持当前部署机 `qmd + digestion` live 基线继续可用。
-2.  进入 `QMD retrieval tuning` 阶段，按 [qmd_phase2_experiment_plan.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_phase2_experiment_plan.md) 对比 `search / query`，并评估纳入 `mission_log` 与 daily memory。
-3.  Telegram 保持后置，不作为当前 blocker。
+2.  按 [openclaw_memory_layer_plan.md](/Users/jungle/Desktop/dev/vibe-os/docs/openclaw_memory_layer_plan.md) 收敛 digestion 输出，稳定写入 `MEMORY.md`、`memory/YYYY-MM-DD.md` 与 `memory/knowledge/`。
+3.  等 daily memory 真实产出后，再做一轮只基于官方 memory 层的最小 QMD 验证。
+4.  Telegram 保持后置，不作为当前 blocker。
 
 一句话：
 
-**下一步不是继续做桌面端，也不是急着做 Telegram，而是把 QMD 的召回质量和索引边界调到可长期使用。**
+**下一步不是继续做桌面端，也不是急着做 Telegram，而是把 digestion 输出稳定收敛到 OpenClaw 官方 memory 层。**

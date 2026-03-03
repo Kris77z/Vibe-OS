@@ -14,4 +14,4 @@
 - `docs/implementation_plan.md`
 - `docs/raycast_openclaw_mvp_runbook.md`
 - `docs/vibe_os_remote_mac_deploy_runbook.md`
-- `docs/remote_mac_connection_and_current_issues_2026-03-02.md`
+- `docs/openclaw_memory_layer_plan.md`

@@ -6,10 +6,13 @@
 > 日期：2026-03-03
 
 > 实机验证与问题沉淀见：
-> [qmd_live_validation_findings_2026-03-03.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_live_validation_findings_2026-03-03.md)
+> [qmd_live_validation_findings_2026-03-03.md](/Users/jungle/Desktop/dev/vibe-os/docs/archive/2026-03/qmd_live_validation_findings_2026-03-03.md)
 >
 > 第二阶段实验计划见：
 > [qmd_phase2_experiment_plan.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_phase2_experiment_plan.md)
+>
+> 当前主线已从 QMD 调参转向官方 memory 层落盘，见：
+> [openclaw_memory_layer_plan.md](/Users/jungle/Desktop/dev/vibe-os/docs/openclaw_memory_layer_plan.md)
 
 ---
 
@@ -44,7 +47,7 @@
 - [openclaw.vibe-os.instance.example.json5](/Users/jungle/Desktop/dev/vibe-os/docs/openclaw.vibe-os.instance.example.json5)
 - [phase_c_and_digestion_plan.md](/Users/jungle/Desktop/dev/vibe-os/docs/phase_c_and_digestion_plan.md)
 - [qmd_minimal_enablement_runbook.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_minimal_enablement_runbook.md)
-- [qmd_live_validation_findings_2026-03-03.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_live_validation_findings_2026-03-03.md)
+- [qmd_live_validation_findings_2026-03-03.md](/Users/jungle/Desktop/dev/vibe-os/docs/archive/2026-03/qmd_live_validation_findings_2026-03-03.md)
 
 历史痕迹：
 
@@ -243,11 +246,18 @@ scripts/qmd_smoke_test.sh \
 - [x] `knowledge / MEMORY` 的 baseline 召回已验证可用
 - [x] QMD 出错时不会打断主服务可用性
 
-未完成但已转入下一阶段的问题：
+未完成但已转入后续阶段的问题：
 
 - [ ] 中文短 query 召回质量优化
 - [ ] `mission_log` 是否纳入索引
 - [ ] daily memory 是否纳入索引
+
+当前 disposition：
+
+- `QMD enablement` 这件事已完成基线收口
+- `query` 不适合当前 live 默认路径
+- 后续不再继续扩自定义 retrieval 架构
+- 下一阶段主问题改为：让 digestion 稳定写入 OpenClaw 官方 memory 层，再基于这些更干净的 memory source 做最小验证
 
 ---
 
@@ -296,7 +306,7 @@ scripts/qmd_smoke_test.sh \
 - [qmd_smoke_test.sh](/Users/jungle/Desktop/dev/vibe-os/scripts/qmd_smoke_test.sh)
 - [qmd_minimal_enablement_runbook.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_minimal_enablement_runbook.md)
 - [openclaw.vibe-os.instance.qmd-overlay.example.json5](/Users/jungle/Desktop/dev/vibe-os/docs/openclaw.vibe-os.instance.qmd-overlay.example.json5)
-- [qmd_live_validation_findings_2026-03-03.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_live_validation_findings_2026-03-03.md)
+- [qmd_live_validation_findings_2026-03-03.md](/Users/jungle/Desktop/dev/vibe-os/docs/archive/2026-03/qmd_live_validation_findings_2026-03-03.md)
 - [qmd_phase2_experiment_plan.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_phase2_experiment_plan.md)
 
 - 一份部署机 QMD 安装 runbook

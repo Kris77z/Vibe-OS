@@ -148,8 +148,8 @@ node scripts/qmd_compare_eval_reports.mjs \
 如果实验完成，后续至少要回写：
 
 - [qmd_phase2_experiment_plan.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_phase2_experiment_plan.md)
-- [qmd_live_validation_findings_2026-03-03.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_live_validation_findings_2026-03-03.md)
+- [qmd_live_validation_findings_2026-03-03.md](/Users/jungle/Desktop/dev/vibe-os/docs/archive/2026-03/qmd_live_validation_findings_2026-03-03.md)
 
 如果结论明确，再补一份：
 
-- `qmd_phase42_mission_log_results_2026-03-03.md`
+- [qmd_phase42_mission_log_results_2026-03-03.md](/Users/jungle/Desktop/dev/vibe-os/docs/archive/2026-03/qmd_phase42_mission_log_results_2026-03-03.md)
