@@ -6,7 +6,10 @@
 > 日期：2026-03-03
 
 > 实机验证与问题沉淀见：
-> [qmd_live_validation_findings_2026-03-03.md](/Users/kris/Desktop/Dev/Vibe-OS/docs/qmd_live_validation_findings_2026-03-03.md)
+> [qmd_live_validation_findings_2026-03-03.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_live_validation_findings_2026-03-03.md)
+>
+> 第二阶段实验计划见：
+> [qmd_phase2_experiment_plan.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_phase2_experiment_plan.md)
 
 ---
 
@@ -24,17 +27,24 @@
 
 ## 1. 当前真实状态
 
-当前部署口径：
+当前 live 口径：
 
-- `memory.backend = "builtin"`
-- `digestion` 通过 controller runner 驱动
-- 远程桌面主入口是 Raycast
+- 部署机实例已切到 `memory.backend = "qmd"`
+- live 白名单当前只索引 `MEMORY.md` 与 `memory/knowledge/**/*.md`
+- `searchMode = "search"`
+- `digestion` 继续通过 controller runner 驱动
+- 远程桌面主入口仍是 Raycast
+
+保留的 fallback / 历史基线：
+
+- `builtin` 仍是可回滚的安全基线
 
 现状依据：
 
 - [openclaw.vibe-os.instance.example.json5](/Users/jungle/Desktop/dev/vibe-os/docs/openclaw.vibe-os.instance.example.json5)
 - [phase_c_and_digestion_plan.md](/Users/jungle/Desktop/dev/vibe-os/docs/phase_c_and_digestion_plan.md)
 - [qmd_minimal_enablement_runbook.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_minimal_enablement_runbook.md)
+- [qmd_live_validation_findings_2026-03-03.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_live_validation_findings_2026-03-03.md)
 
 历史痕迹：
 
@@ -131,6 +141,13 @@ memory: {
       maxResults: 6,
       timeoutMs: 4000
     },
+    scope: {
+      default: "allow",
+      rules: [
+        { action: "deny", match: { chatType: "group" } },
+        { action: "deny", match: { chatType: "channel" } }
+      ]
+    },
     paths: [
       { name: "memory-root", path: ".", pattern: "MEMORY.md" },
       { name: "knowledge", path: "memory/knowledge", pattern: "**/*.md" }
@@ -143,6 +160,7 @@ memory: {
 
 - `includeDefaultMemory = false` 是第一版推荐值
 - 否则 OpenClaw 默认集合会把 `memory/**/*.md` 也纳入索引，等于把 `braindump.md` 一起吃进去
+- QMD 默认 scope 会让 CLI `openclaw memory search` 变得不可测；当前 live 口径改为 `default: "allow"`，再显式拒绝 `group / channel`
 - 正式切换前先用 [qmd_minimal_enablement_runbook.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_minimal_enablement_runbook.md) 跑完依赖检查和 smoke test
 
 ---
@@ -207,15 +225,29 @@ scripts/qmd_smoke_test.sh \
 - 一周前的项目疑虑
 - 某个长期主题的历史脉络
 
+当前状态：
+
+- 上述 baseline 步骤已在部署机真实跑通
+- 下一阶段重点不再是“切不切得上 QMD”，而是：
+  - `search` vs `query` 的中文召回质量
+  - 是否纳入 `memory/mission_log.md`
+  - 是否纳入 `memory/YYYY-MM-DD.md`
+
 ---
 
 ## 6. 验收标准
 
-- [ ] 部署机 `qmd` CLI 已安装可执行
-- [ ] OpenClaw 实例可用 `memory.backend = "qmd"` 正常启动
-- [ ] `memory_search` 已实际通过 QMD 返回结果
-- [ ] 检索结果对 `knowledge / MEMORY` 的召回优于当前 builtin
-- [ ] QMD 出错时不会打断主服务可用性
+- [x] 部署机 `qmd` CLI 已安装可执行
+- [x] OpenClaw 实例可用 `memory.backend = "qmd"` 正常启动
+- [x] `memory_search` 已实际通过 QMD 返回结果
+- [x] `knowledge / MEMORY` 的 baseline 召回已验证可用
+- [x] QMD 出错时不会打断主服务可用性
+
+未完成但已转入下一阶段的问题：
+
+- [ ] 中文短 query 召回质量优化
+- [ ] `mission_log` 是否纳入索引
+- [ ] daily memory 是否纳入索引
 
 ---
 
@@ -264,6 +296,8 @@ scripts/qmd_smoke_test.sh \
 - [qmd_smoke_test.sh](/Users/jungle/Desktop/dev/vibe-os/scripts/qmd_smoke_test.sh)
 - [qmd_minimal_enablement_runbook.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_minimal_enablement_runbook.md)
 - [openclaw.vibe-os.instance.qmd-overlay.example.json5](/Users/jungle/Desktop/dev/vibe-os/docs/openclaw.vibe-os.instance.qmd-overlay.example.json5)
+- [qmd_live_validation_findings_2026-03-03.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_live_validation_findings_2026-03-03.md)
+- [qmd_phase2_experiment_plan.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_phase2_experiment_plan.md)
 
 - 一份部署机 QMD 安装 runbook
 - 一份 QMD 切换验证记录

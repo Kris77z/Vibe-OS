@@ -1,0 +1,14 @@
+{
+  // Apply this on top of the live QMD baseline only after daily memory files exist.
+  // Goal: test whether recent context recall improves more than it pollutes.
+
+  memory: {
+    qmd: {
+      paths: [
+        { name: "memory-root", path: ".", pattern: "MEMORY.md" },
+        { name: "knowledge", path: "memory/knowledge", pattern: "**/*.md" },
+        { name: "daily-memory", path: "memory", pattern: "20*.md" }
+      ]
+    }
+  }
+}

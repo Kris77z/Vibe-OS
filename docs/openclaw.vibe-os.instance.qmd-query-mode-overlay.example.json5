@@ -1,0 +1,10 @@
+{
+  // Apply this on top of the live QMD baseline only for searchMode comparison.
+  // Goal: compare Chinese / mixed-language recall vs the current "search" baseline.
+
+  memory: {
+    qmd: {
+      searchMode: "query"
+    }
+  }
+}

@@ -1,6 +1,8 @@
 # QMD 实机验证结论（2026-03-03）
 
 > 目的：记录这轮在本机真实实例上的 QMD enablement、live 切换与召回质量验证结论，供后续开发机评估与迭代使用。
+> 总蓝图见 [implementation_plan.md](/Users/jungle/Desktop/dev/vibe-os/docs/implementation_plan.md)。
+> 下一阶段实验项见 [qmd_phase2_experiment_plan.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_phase2_experiment_plan.md)。
 
 日期：2026-03-03
 

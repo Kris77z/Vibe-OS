@@ -9,7 +9,7 @@
 
 当前主线已经从“抽象蓝图”进入“分阶段落地 + 文档拆分”的状态，因此这里不再只写理想方案，也同步维护真实进度。
 
-基于“不重复造轮子”的第一性原理，当前核心架构口径是：**OpenClaw 提供 Agent 底座与记忆引擎 + Raycast 作为桌面主入口 + Telegram 继续后置 + QMD 作为下一阶段记忆增强主线**。
+基于“不重复造轮子”的第一性原理，当前核心架构口径是：**OpenClaw 提供 Agent 底座与记忆引擎 + Raycast 作为桌面主入口 + Telegram 继续后置 + QMD 已在部署机 live 跑通，下一阶段主线切到召回质量调优**。
 
 ---
 
@@ -118,21 +118,26 @@
 
 - Raycast 桌面入口已够用
 - Digestion MVP 已完成，可收阶段
+- QMD 已在部署机 live 跑通
 - Telegram 仍后置
-- 下一阶段主线切到 `QMD enablement`
+- 下一阶段主线切到 `QMD retrieval tuning`
 
 ### 2026-03-03 正在推进的阶段
 
-#### D. QMD Enablement 准备资产
+#### D. QMD Enablement Live 基线
 
 - 已收敛部署机 QMD 切换边界：先 preflight，再 smoke test，再切 backend
 - 已明确第一版不使用 `includeDefaultMemory = true`
 - 已补部署机依赖检查脚本、QMD 最小启动验证脚本、配置 overlay 示例
+- 已在部署机完成 live 切换，当前 `memory.backend = qmd`
+- 已补 live 验证结论，明确下一阶段主问题是中文召回与白名单扩展
 
 对应文档：
 
 - [qmd_enablement_plan.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_enablement_plan.md)
 - [qmd_minimal_enablement_runbook.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_minimal_enablement_runbook.md)
+- [qmd_live_validation_findings_2026-03-03.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_live_validation_findings_2026-03-03.md)
+- [qmd_phase2_experiment_plan.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_phase2_experiment_plan.md)
 
 对应代码 / 脚本：
 
@@ -194,6 +199,13 @@
 
 - [qmd_enablement_plan.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_enablement_plan.md)
 - [qmd_minimal_enablement_runbook.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_minimal_enablement_runbook.md)
+- [qmd_live_validation_findings_2026-03-03.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_live_validation_findings_2026-03-03.md)
+- [qmd_phase2_experiment_plan.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_phase2_experiment_plan.md)
+
+当前状态：
+
+- 阶段四 baseline 已完成
+- 下一步进入阶段四第二子阶段：召回质量调优与索引白名单扩展
 
 ### 阶段五：移动端入口与长期运维 (Telegram / Ops)
 *目标：补齐移动端入口与长期稳定性。*
@@ -210,10 +222,10 @@
 
 现在最合理的下一步是：
 
-1.  保持当前 `builtin + digestion` 闭环继续可用。
-2.  进入 `QMD enablement` 阶段，按 [qmd_minimal_enablement_runbook.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_minimal_enablement_runbook.md) 先完成部署机依赖检查、最小启动验证、再做配置切换。
+1.  保持当前部署机 `qmd + digestion` live 基线继续可用。
+2.  进入 `QMD retrieval tuning` 阶段，按 [qmd_phase2_experiment_plan.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_phase2_experiment_plan.md) 对比 `search / query`，并评估纳入 `mission_log` 与 daily memory。
 3.  Telegram 保持后置，不作为当前 blocker。
 
 一句话：
 
-**下一步不是继续做桌面端，也不是急着做 Telegram，而是把 QMD 按照 Cali 的记忆架构原则接进来。**
+**下一步不是继续做桌面端，也不是急着做 Telegram，而是把 QMD 的召回质量和索引边界调到可长期使用。**

@@ -1,0 +1,249 @@
+# QMD Phase 4.2 实验计划
+
+> 本文档承接 [implementation_plan.md](/Users/jungle/Desktop/dev/vibe-os/docs/implementation_plan.md) 阶段四。
+> 前置 live 结论见 [qmd_live_validation_findings_2026-03-03.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_live_validation_findings_2026-03-03.md)。
+> 目标：在保持部署机 live QMD 可用的前提下，系统化推进召回质量调优，而不是继续停留在“能不能跑”。
+
+日期：2026-03-03
+
+---
+
+## 0. 当前已知事实
+
+部署机当前已经满足：
+
+- `memory.backend = "qmd"` 已 live
+- baseline 白名单只索引：
+  - `MEMORY.md`
+  - `memory/knowledge/**/*.md`
+- `searchMode = "search"`
+- `knowledge` 与 `MEMORY.md` 召回可用
+
+同时已经确认的问题：
+
+1. 中文短 query 在 `search` 模式下偏弱
+2. `memory/mission_log.md` 未纳入索引，导致历史任务/疑虑召回缺失
+3. `memory/YYYY-MM-DD.md` 还没纳入，daily memory 的收益与污染成本未知
+
+---
+
+## 1. 本阶段目标
+
+这一阶段只做三件事：
+
+1. 对比 `search` / `query` / 必要时 `vsearch` 的召回质量
+2. 评估第二阶段白名单是否纳入 `memory/mission_log.md`
+3. 评估第二阶段白名单是否纳入 `memory/YYYY-MM-DD.md`
+
+配套资产：
+
+- 评测 query 集：
+  [qmd_eval_queries.txt](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_eval_queries.txt)
+- 评测脚本：
+  [qmd_eval_matrix.mjs](/Users/jungle/Desktop/dev/vibe-os/scripts/qmd_eval_matrix.mjs)
+- 结果对比脚本：
+  [qmd_compare_eval_reports.mjs](/Users/jungle/Desktop/dev/vibe-os/scripts/qmd_compare_eval_reports.mjs)
+- query mode overlay：
+  [openclaw.vibe-os.instance.qmd-query-mode-overlay.example.json5](/Users/jungle/Desktop/dev/vibe-os/docs/openclaw.vibe-os.instance.qmd-query-mode-overlay.example.json5)
+- mission log overlay：
+  [openclaw.vibe-os.instance.qmd-mission-log-overlay.example.json5](/Users/jungle/Desktop/dev/vibe-os/docs/openclaw.vibe-os.instance.qmd-mission-log-overlay.example.json5)
+- daily memory overlay：
+  [openclaw.vibe-os.instance.qmd-daily-memory-overlay.example.json5](/Users/jungle/Desktop/dev/vibe-os/docs/openclaw.vibe-os.instance.qmd-daily-memory-overlay.example.json5)
+
+这一阶段明确不做：
+
+- 索引 `memory/braindump.md`
+- Telegram 相关改动
+- 重做 Raycast
+- 重构 digestion 产物格式
+
+---
+
+## 2. 实验一：Search Mode 对比
+
+### 2.1 目的
+
+确认是否值得从当前的 `search` 切到 `query`。
+
+### 2.2 对比对象
+
+- `search`
+- `query`
+- 必要时再加 `vsearch`
+
+### 2.3 评测 query 集
+
+至少覆盖三类：
+
+1. 用户偏好
+2. 项目知识 / 长期主题
+3. 历史任务 / 项目疑虑
+
+建议 query：
+
+```text
+AI Native
+Crypto Markdown
+Memory as File System
+减脂
+OpenClaw gateway
+remote digestion
+run_remote_digestion.mjs
+验证 remote runner
+```
+
+### 2.4 评估维度
+
+- 是否命中正确文档
+- 结果是否出现在前 3
+- 中文短 query 是否明显改善
+- 响应延迟是否可接受
+- 首次冷启动是否明显恶化
+
+### 2.5 验收口径
+
+只有同时满足下面条件，才值得切 live：
+
+- 中文 query 的有效召回明显优于 `search`
+- 英文 / 中英混合 query 没有明显退化
+- 响应时延没有恶化到影响交互
+
+推荐执行：
+
+```bash
+node scripts/qmd_eval_matrix.mjs \
+  --label search-baseline \
+  --format json \
+  --output .logs/qmd-eval/search-baseline.json
+```
+
+切到 `query` overlay 后再跑：
+
+```bash
+node scripts/qmd_eval_matrix.mjs \
+  --label query-mode \
+  --format json \
+  --output .logs/qmd-eval/query-mode.json
+```
+
+再生成对比摘要：
+
+```bash
+node scripts/qmd_compare_eval_reports.mjs \
+  --base .logs/qmd-eval/search-baseline.json \
+  --candidate .logs/qmd-eval/query-mode.json \
+  --output .logs/qmd-eval/search-vs-query.md
+```
+
+---
+
+## 3. 实验二：Mission Log 纳入评估
+
+### 3.1 目的
+
+补齐“历史任务 / 历史疑虑 / 跟进项”召回缺口。
+
+### 3.2 候选白名单
+
+在当前 baseline 上新增：
+
+```json5
+{ name: "mission-log", path: "memory", pattern: "mission_log.md" }
+```
+
+对应 overlay：
+
+- [openclaw.vibe-os.instance.qmd-mission-log-overlay.example.json5](/Users/jungle/Desktop/dev/vibe-os/docs/openclaw.vibe-os.instance.qmd-mission-log-overlay.example.json5)
+
+### 3.3 关注点
+
+- 是否能补到 `run_remote_digestion.mjs`、`验证 remote runner` 这类历史任务线索
+- 是否引入过多低密度 TODO 噪音
+- 是否挤占 `knowledge / MEMORY` 的高价值结果位
+
+### 3.4 验收口径
+
+只有在“任务召回明显提升”且“不会大面积污染原有高密度结果”时，才纳入 live 白名单。
+
+---
+
+## 4. 实验三：Daily Memory 纳入评估
+
+### 4.1 前提
+
+只有在 `memory/YYYY-MM-DD.md` 真实稳定产出后，才做这轮实验。
+
+### 4.2 候选白名单
+
+```json5
+{ name: "daily-memory", path: "memory", pattern: "20*.md" }
+```
+
+对应 overlay：
+
+- [openclaw.vibe-os.instance.qmd-daily-memory-overlay.example.json5](/Users/jungle/Desktop/dev/vibe-os/docs/openclaw.vibe-os.instance.qmd-daily-memory-overlay.example.json5)
+
+### 4.3 目的
+
+补齐“最近几天讨论过但尚未进入 knowledge / MEMORY”的上下文召回。
+
+### 4.4 风险
+
+- 时间性噪音增多
+- 检索结果更像流水账
+- 容易稀释 `knowledge / MEMORY` 的信号强度
+
+### 4.5 验收口径
+
+如果 daily memory 只能带来少量增益，却显著污染 top results，就不进入 live。
+
+---
+
+## 5. 推荐实验顺序
+
+1. 先固定当前 baseline：
+   - `searchMode = search`
+   - 白名单只含 `MEMORY.md + knowledge`
+2. 仅切换 search mode，对比 `search` vs `query`
+3. 在保留较优 search mode 的前提下，单独评估 `mission_log`
+4. 最后再评估 `daily memory`
+
+原则：
+
+- 一次只改一个变量
+- 不把 `searchMode` 和白名单扩展绑在同一轮
+- 不把 `mission_log` 和 `daily memory` 绑在同一轮
+
+---
+
+## 6. 建议输出物
+
+完成这阶段后，至少应补齐：
+
+- 一份 search mode 对比记录
+- 一份 `mission_log` 纳入与否结论
+- 一份 `daily memory` 纳入与否结论
+- 如果 live 配置发生变化，同步更新：
+  - [implementation_plan.md](/Users/jungle/Desktop/dev/vibe-os/docs/implementation_plan.md)
+  - [qmd_enablement_plan.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_enablement_plan.md)
+  - [qmd_live_validation_findings_2026-03-03.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_live_validation_findings_2026-03-03.md)
+
+---
+
+## 7. 当前结论
+
+QMD baseline enablement 已完成。
+
+现在的主问题不是：
+
+- QMD 有没有装上
+- Gateway 能不能起来
+- `memory_search` 有没有结果
+
+现在的主问题是：
+
+- 中文 query 召回质量够不够
+- `mission_log` 值不值得纳入
+- daily memory 值不值得纳入
+
+这才是阶段四接下来的真正主线。

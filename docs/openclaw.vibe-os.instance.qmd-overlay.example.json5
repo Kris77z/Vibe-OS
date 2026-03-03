@@ -8,6 +8,7 @@
   // - keep searchMode on fast BM25-first "search"
   // - disable default memory auto-include so braindump is not indexed by accident
   // - explicitly whitelist high-density memory only
+  // - allow CLI / local validation, while still denying groups/channels
 
   memory: {
     backend: "qmd",
@@ -29,6 +30,13 @@
         maxSnippetChars: 700,
         maxInjectedChars: 4000,
         timeoutMs: 4000
+      },
+      scope: {
+        default: "allow",
+        rules: [
+          { action: "deny", match: { chatType: "group" } },
+          { action: "deny", match: { chatType: "channel" } }
+        ]
       },
       paths: [
         {

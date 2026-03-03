@@ -2,6 +2,12 @@
 
 > 本文档是 [implementation_plan.md](/Users/jungle/Desktop/dev/vibe-os/docs/implementation_plan.md) 阶段四的可执行子 runbook，配合 [qmd_enablement_plan.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_enablement_plan.md) 使用。
 > 目标：先把部署机依赖检查、QMD 最小启动验证、配置切换方案收成一条最短可执行路径。
+> 当前状态：本 runbook 已在部署机真实跑通，现在更多作为复现、回滚和新机器重放基线使用。
+
+后续 live 结论与下一阶段实验项见：
+
+- [qmd_live_validation_findings_2026-03-03.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_live_validation_findings_2026-03-03.md)
+- [qmd_phase2_experiment_plan.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_phase2_experiment_plan.md)
 
 日期：2026-03-03
 
@@ -125,6 +131,7 @@ scripts/qmd_smoke_test.sh \
    - `memory/knowledge/**/*.md`
 5. `searchMode` 先用 `search`
 6. `waitForBootSync` 保持 `false`
+7. 为了保留 CLI / 本地验证能力，`scope` 设为 `default: "allow"`，再显式拒绝 `group / channel`
 
 ### Step 4. OpenClaw 切换后验证
 

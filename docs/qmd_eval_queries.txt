@@ -1,0 +1,16 @@
+# QMD Phase 4.2 baseline query set
+# Blank lines and lines starting with # are ignored.
+
+# User preferences
+AI Native
+Crypto Markdown
+Memory as File System
+减脂
+
+# Long-term/project knowledge
+OpenClaw gateway
+remote digestion
+
+# Historical tasks / concerns
+run_remote_digestion.mjs
+验证 remote runner

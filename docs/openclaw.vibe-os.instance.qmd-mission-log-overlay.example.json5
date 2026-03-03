@@ -1,0 +1,14 @@
+{
+  // Apply this on top of the live QMD baseline only for the mission_log experiment.
+  // Goal: test whether mission/task recall improves without polluting top results.
+
+  memory: {
+    qmd: {
+      paths: [
+        { name: "memory-root", path: ".", pattern: "MEMORY.md" },
+        { name: "knowledge", path: "memory/knowledge", pattern: "**/*.md" },
+        { name: "mission-log", path: "memory", pattern: "mission_log.md" }
+      ]
+    }
+  }
+}
