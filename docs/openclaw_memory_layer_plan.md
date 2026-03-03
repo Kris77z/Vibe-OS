@@ -3,6 +3,7 @@
 > 本文档承接 [implementation_plan.md](/Users/jungle/Desktop/dev/vibe-os/docs/implementation_plan.md) 当前主线。
 > QMD enablement 已完成基线，相关收口见 [qmd_enablement_plan.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_enablement_plan.md)。
 > 官方 memory 模型说明见 [openclaw/docs/concepts/memory.md](/Users/jungle/Desktop/dev/vibe-os/openclaw/docs/concepts/memory.md)。
+> 写入边界规范见 [openclaw_memory_write_spec.md](/Users/jungle/Desktop/dev/vibe-os/docs/openclaw_memory_write_spec.md)。
 
 日期：2026-03-03
 
@@ -148,6 +149,10 @@
 - 什么进 `MEMORY.md`
 - 什么进 `memory/YYYY-MM-DD.md`
 - 什么进 `memory/knowledge/*.md`
+
+对应文档：
+
+- [openclaw_memory_write_spec.md](/Users/jungle/Desktop/dev/vibe-os/docs/openclaw_memory_write_spec.md)
 
 原则：
 

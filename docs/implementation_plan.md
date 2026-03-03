@@ -160,6 +160,7 @@
 对应文档：
 
 - [openclaw_memory_layer_plan.md](/Users/jungle/Desktop/dev/vibe-os/docs/openclaw_memory_layer_plan.md)
+- [openclaw_memory_write_spec.md](/Users/jungle/Desktop/dev/vibe-os/docs/openclaw_memory_write_spec.md)
 - [openclaw/docs/concepts/memory.md](/Users/jungle/Desktop/dev/vibe-os/openclaw/docs/concepts/memory.md)
 
 ---
