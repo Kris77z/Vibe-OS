@@ -160,6 +160,8 @@ OPENAI_AUTH_KEY=...
 - 先保证 braindump / memory_search / 写盘链路可用
 - 需要更强检索时，再单独引入 QMD
 - 首发部署时不要额外安装或启用 `qmd`
+- QMD 第二阶段切换看：
+  [qmd_minimal_enablement_runbook.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_minimal_enablement_runbook.md)
 
 当前 `vibe-os` sandbox 口径：
 

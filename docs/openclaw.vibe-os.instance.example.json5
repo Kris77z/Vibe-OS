@@ -121,6 +121,9 @@
   },
 
   memory: {
+    // Keep builtin as the production-safe default.
+    // QMD cutover should be applied later via:
+    // docs/openclaw.vibe-os.instance.qmd-overlay.example.json5
     backend: "builtin",
     citations: "auto"
   },

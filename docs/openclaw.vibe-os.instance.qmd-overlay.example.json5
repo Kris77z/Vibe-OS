@@ -1,0 +1,53 @@
+{
+  // Merge this block into the existing instance config only after:
+  // 1. scripts/check_qmd_prereqs.sh passes
+  // 2. scripts/qmd_smoke_test.sh passes
+  //
+  // This overlay is intentionally conservative:
+  // - switch backend to qmd
+  // - keep searchMode on fast BM25-first "search"
+  // - disable default memory auto-include so braindump is not indexed by accident
+  // - explicitly whitelist high-density memory only
+
+  memory: {
+    backend: "qmd",
+    citations: "auto",
+    qmd: {
+      searchMode: "search",
+      includeDefaultMemory: false,
+      update: {
+        interval: "5m",
+        onBoot: true,
+        waitForBootSync: false,
+        embedInterval: "60m",
+        commandTimeoutMs: 30000,
+        updateTimeoutMs: 120000,
+        embedTimeoutMs: 120000
+      },
+      limits: {
+        maxResults: 6,
+        maxSnippetChars: 700,
+        maxInjectedChars: 4000,
+        timeoutMs: 4000
+      },
+      paths: [
+        {
+          name: "memory-root",
+          path: ".",
+          pattern: "MEMORY.md"
+        },
+        {
+          name: "knowledge",
+          path: "memory/knowledge",
+          pattern: "**/*.md"
+        }
+        // Phase 4.2 candidate after daily memory files become stable:
+        // {
+        //   name: "daily-memory",
+        //   path: "memory",
+        //   pattern: "20*.md"
+        // }
+      ]
+    }
+  }
+}
