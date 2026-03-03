@@ -306,6 +306,11 @@ live instance 真实结果：
 - 重复 knowledge 文件已合并回 `memory/knowledge/vibe_os_digestion.md`
 - 仓库内 prompt 已补 strict JSON contract 与 snake_case 命名约束
 
+遗留说明：
+
+- live `memory/2026-03-03.md` 与 `memory/braindump.md` 中保留了本轮 validation 内容；这是运行期真实痕迹，不在本轮代码收口中回滚
+- `task_result_v1` 的 prompt 约束已收紧，但还需要后续再做一轮 machine-strict 验证
+
 ---
 
 ## 5. 当前限制

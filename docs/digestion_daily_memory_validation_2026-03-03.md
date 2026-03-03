@@ -68,6 +68,43 @@ live `braindump.md` 中有一条历史记录没有以换行结束，导致第一
 - 已删除重复的连字符版本
 - 仓库 prompt 已补 snake_case 约束
 
+## 遗留问题与处理口径
+
+### A. `task_result_v1` 仍未做到 machine-strict
+
+当前状态：
+
+- prompt 已补“严格输出 contract”约束
+- 但尚未再次完成一轮 live 验证，证明 agent 一定会持续返回完全合法的 schema
+
+开发口径：
+
+- 后续优先继续收口返回结果格式
+- 在返回 contract 稳定前，不把这层结果当成强依赖自动化接口
+
+### B. braindump 追加器需要保证 entry 前后边界
+
+当前状态：
+
+- 这轮已确认：如果上一条记录末尾没有换行，新 entry 可能被并入旧 entry
+
+开发口径：
+
+- 所有 braindump 写入口都应保证“必要时先补换行，再追加新记录”
+- 这应视为 append discipline 的一部分，而不是临时修补
+
+### C. live workspace 已包含 validation 痕迹
+
+当前状态：
+
+- `memory/2026-03-03.md` 中包含本轮验证写入的 daily memory 内容
+- `memory/braindump.md` 中保留了本轮 validation 条目
+
+处理口径：
+
+- 这些内容属于真实运行期间产生的验证痕迹，不在本轮清理范围内
+- 后续如果要做 memory 内容清洗，应单独作为一次显式操作处理，不在这轮代码收口里顺手修改
+
 ## 当前结论
 
 这轮之后，可以确认两件事：
