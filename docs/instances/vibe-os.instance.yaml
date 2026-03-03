@@ -63,6 +63,7 @@ contracts:
 
 write_scopes:
   - memory/braindump.md
+  - memory/YYYY-MM-DD.md
   - memory/mission_log.md
   - memory/knowledge/
 

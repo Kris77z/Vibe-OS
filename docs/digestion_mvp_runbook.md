@@ -1,16 +1,17 @@
 # Digestion MVP Runbook
 
-> 目标：先跑通本地增量切片与状态游标，再把同一份 payload 喂给 OpenClaw 做真正的 `mission_log / knowledge` 提炼。
+> 目标：先跑通本地增量切片与状态游标，再把同一份 payload 喂给 OpenClaw 做真正的 `daily memory / mission_log / knowledge` 提炼。
 > 日期：2026-03-03
 
 ---
 
 ## 0. 当前范围
 
-这一版只解决两件事：
+这一版先解决三件事：
 
 1. 如何只读取 `braindump.md` 的新增条目
 2. 如何在成功后推进 `digestion_state.json`
+3. 如何让 digestion 默认产出 `memory/YYYY-MM-DD.md`
 
 这一版还不直接自动改写：
 
@@ -21,7 +22,9 @@
 当前状态：
 
 - 2026-03-03 已在部署机真实跑通第一轮 digestion
+- 当前脚本口径已切到 `daily memory` 默认出口
 - 已确认可写入 `mission_log.md`、`memory/knowledge/*.md`、`digestion_state.json`
+- 2026-03-03 已在 live instance 真实产出 `memory/2026-03-03.md`
 - 已确认无新增条目时会返回 `noop`，且不重复写文件
 - 已开始把远程执行收敛为单条本地命令，而不是临时 SSH 拼接
 - 2026-03-03 已验证 `run_remote_digestion.mjs` 的 no-op 与真实写入两种路径
@@ -86,7 +89,7 @@ node scripts/digestion_mvp.mjs prepare
 
 ### 2.2 成功后推进游标
 
-当且仅当这次 digestion 已经成功写入 `mission_log` / `knowledge` 后，再执行：
+当且仅当这次 digestion 已经成功写入 `daily memory` / `mission_log` / `knowledge` 后，再执行：
 
 ```bash
 node scripts/digestion_mvp.mjs commit --end-line <prepare 输出里的 endLine>
@@ -119,7 +122,7 @@ node scripts/run_remote_digestion.mjs run
 当前状态：
 
 - 已验证无新增条目时返回 `noop`
-- 已验证新增条目时可真实写入 `mission_log.md` / `memory/knowledge/*.md`
+- 下一步主线是验证新增条目可真实写入 `memory/YYYY-MM-DD.md`
 - 已验证 `digestion_state.json` 可由控制器侧推进，而不是继续依赖 agent 写时间戳
 
 ### 2.4 包装成本地稳定入口
@@ -195,7 +198,7 @@ node scripts/digestion_mvp.mjs prepare
 
 ### Step 3
 
-确认 `mission_log.md` / `memory/knowledge/` 已成功更新。
+确认 `memory/YYYY-MM-DD.md` / `mission_log.md` / `memory/knowledge/` 已成功更新。
 
 ### Step 4
 
@@ -282,6 +285,27 @@ node scripts/run_remote_digestion.mjs run
 - 但当前 digestion 不应直接交给 cron job 的 agent turn 负责文件改写
 - 当前正式路径改为“控制器侧 runner + 系统级 launchd 定时”
 
+### 2026-03-03 第四轮：daily memory 真实落盘验证
+
+live instance 真实结果：
+
+- 已新增 `memory/2026-03-03.md`
+- `mission_log.md` 保持任务视角，没有被改写成背景说明
+- `MEMORY.md` 保持不动
+- `digestion_state.json` 已推进到新行号，复跑 `prepare` 会返回 `noop`
+
+这轮同时暴露了三件事：
+
+- 历史 `braindump.md` 有一条记录末尾缺少换行，导致首个 validation entry 被黏进旧行
+- agent 返回的 JSON 还没完全贴合 `task_result_v1`，只是“接近”
+- knowledge 文件命名还需要约束，否则容易为同主题同时产出 `vibe_os_xxx.md` 和 `vibe-os-xxx.md`
+
+处理结果：
+
+- live 现场已清理掉本轮 `.digestion_validation_*` 临时文件
+- 重复 knowledge 文件已合并回 `memory/knowledge/vibe_os_digestion.md`
+- 仓库内 prompt 已补 strict JSON contract 与 snake_case 命名约束
+
 ---
 
 ## 5. 当前限制
@@ -292,6 +316,8 @@ node scripts/run_remote_digestion.mjs run
 - `commit` 继续以最后一条记录的块尾 `endLine` 推进游标
 - 当前第一次实跑仍由 agent 写入了 `digestion_state.json`
 - 后续以控制器侧推进 `digestion_state.json` 为准，避免继续依赖 agent 写时间戳
+- 如果历史 braindump 记录没有以换行结束，新的条目可能会被拼进旧记录，导致增量检测失真
+- 当前 agent 侧虽然已能真实写 daily memory，但结构化返回 contract 仍需继续收口
 
 ---
 
@@ -299,6 +325,6 @@ node scripts/run_remote_digestion.mjs run
 
 这个 runbook 跑通后，下一手再做：
 
-1. 用 `launchd` 把 `scripts/run_remote_digestion.sh` 挂成稳定定时任务
-2. 补失败重试与告警观察面
-3. 再补失败告警出口
+1. 继续收口 `task_result_v1` 返回，避免再出现“结构接近但不完全符合 schema”的结果
+2. 用 `launchd` 把 `scripts/run_remote_digestion.sh` 挂成稳定定时任务
+3. 连续观察几天真实产出的 `memory/YYYY-MM-DD.md`

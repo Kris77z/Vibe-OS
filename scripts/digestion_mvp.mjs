@@ -83,6 +83,11 @@ function isBraindumpEntry(line) {
   return /^\[\d{4}-\d{2}-\d{2}/.test(line);
 }
 
+function extractEntryDate(line) {
+  const matched = String(line).match(/^\[(\d{4}-\d{2}-\d{2})(?:[ T]\d{2}:\d{2}(?::\d{2})?)?/);
+  return matched ? matched[1] : null;
+}
+
 function buildBraindumpEntries(lines) {
   const entries = [];
   let currentEntry = null;
@@ -119,8 +124,25 @@ function buildBraindumpEntries(lines) {
 
   return entries.map(({ lines: entryLines, ...entry }) => ({
     ...entry,
+    date: extractEntryDate(entryLines[0]),
     lineCount: entryLines.length,
   }));
+}
+
+function buildDailyMemoryTargets(entries) {
+  const seen = new Set();
+  const targets = [];
+
+  for (const entry of entries) {
+    if (!entry?.date || seen.has(entry.date)) continue;
+    seen.add(entry.date);
+    targets.push({
+      date: entry.date,
+      path: `memory/${entry.date}.md`,
+    });
+  }
+
+  return targets;
 }
 
 function buildPreparePayload(source = "manual") {
@@ -142,11 +164,12 @@ function buildPreparePayload(source = "manual") {
   const newEntries = indexedEntries.filter(
     (item) => item.endLine > state.lastProcessedLine,
   );
+  const dailyMemoryTargets = buildDailyMemoryTargets(newEntries);
 
   if (newEntries.length === 0) {
     return {
       status: "noop",
-      summary: "没有新的 braindump 条目需要消化。",
+      summary: "没有新的 braindump 条目需要消化，也不要改写 daily memory。",
       state,
       stats: {
         totalLines: lines.length,
@@ -165,7 +188,7 @@ function buildPreparePayload(source = "manual") {
     requestId,
     instanceId: "vibe-os",
     kind: "task_run",
-    objective: "整理新增 braindump 并更新 mission_log 与 knowledge",
+    objective: "整理新增 braindump，并按 memory 写入规范更新 daily memory、mission_log 与 knowledge",
     context: {
       source,
       workspaceRoot,
@@ -173,23 +196,28 @@ function buildPreparePayload(source = "manual") {
         "memory/braindump.md",
         "memory/mission_log.md",
         "memory/digestion_state.json",
+        ...dailyMemoryTargets.map((target) => target.path),
       ],
       startLine,
       endLine,
       excerpt,
+      dailyMemoryTargets,
       entries: newEntries.map((entry) => ({
         startLine: entry.startLine,
         endLine: entry.endLine,
+        date: entry.date,
         lineCount: entry.lineCount,
       })),
     },
     constraints: {
       writeScope: [
         "memory/mission_log.md",
+        ...dailyMemoryTargets.map((target) => target.path),
         "memory/knowledge/",
         "memory/digestion_state.json",
       ],
       maxDurationSec: 300,
+      toolProfile: "standard-project",
     },
     expectedOutput: {
       format: "json",
@@ -244,12 +272,19 @@ function renderPrompt(payloadFilePath) {
 
   const payload = JSON.parse(fs.readFileSync(absolutePath, "utf8"));
   if (payload.status === "noop") {
-    return "当前没有新的 braindump 条目需要消化，不要改写 mission_log 或 knowledge。";
+    return "当前没有新的 braindump 条目需要消化，不要改写 daily memory、mission_log 或 knowledge。";
   }
 
   const startLine = payload?.context?.startLine;
   const endLine = payload?.context?.endLine;
   const excerpt = String(payload?.context?.excerpt || "").trim();
+  const dailyMemoryTargets = Array.isArray(payload?.context?.dailyMemoryTargets)
+    ? payload.context.dailyMemoryTargets
+    : [];
+  const dailyMemoryTargetList =
+    dailyMemoryTargets.length > 0
+      ? dailyMemoryTargets.map((item) => `- ${item.path}`).join("\n")
+      : "- memory/<YYYY-MM-DD>.md";
 
   return [
     "你现在执行一次 Vibe-OS digestion 任务。",
@@ -260,9 +295,17 @@ function renderPrompt(payloadFilePath) {
     "请严格执行以下约束：",
     "1. 不要改写或删除 memory/braindump.md。",
     "2. 如果发现明确的 TODO、跟进项、下一步行动，追加写入 memory/mission_log.md。",
-    "3. 如果发现值得长期保留的知识或原则，按领域追加到 memory/knowledge/ 对应文件；如无合适文件可新建。",
-    "4. 如果内容只是噪音、测试或纯情绪且没有长期价值，可以不写入 mission_log 或 knowledge。",
-    "5. 完成后只输出一个简短 JSON，对应 task_result_v1 风格，至少包含 status、summary、artifacts、actions、memoryWrites、errors。",
+    "3. 默认把近期上下文、推进脉络、短期结论、风险观察写入对应日期的 daily memory 文件。",
+    "4. daily memory 目标文件如下；如果文件不存在，可以新建：",
+    dailyMemoryTargetList,
+    "5. daily memory 不要直接复制原始 braindump，要蒸馏后再写；优先用这些分节：Active Context、Decisions、Risks / Watchpoints、Promotion Candidates。",
+    "6. 如果发现值得长期复用的专题知识或原则，优先追加到已有的 memory/knowledge/*.md；只有确认没有合适主题文件时才新建。",
+    "7. knowledge 文件命名保持 snake_case，不要为同一主题同时创建连字符和下划线两种文件名。",
+    "8. 这一轮不要默认改写 MEMORY.md；除非明确是高置信、跨天稳定的 durable memory，否则保持不动。",
+    "9. 如果内容只是噪音、测试或纯情绪且没有长期价值，可以不写入 daily memory、mission_log 或 knowledge。",
+    "10. 完成后只输出一个严格符合 task_result_v1 的 JSON，不要输出额外解释文字。",
+    "11. task_result_v1 里：artifacts 必须是数组，actions 必须是数组，memoryWrites 必须是数组；不要自造对象形状。",
+    "12. artifact.type 只能用 file_update / file_create / file_delete / report / command_result；action.type 只能用 append / update / create / delete / notify / noop；memoryWrites[].reason 只能用 long_term_knowledge / task_update / session_summary / other。",
     "",
     "本次新增 braindump 原文如下：",
     excerpt,
