@@ -5,6 +5,9 @@
 > 目标：在不破坏当前 `builtin + digestion + launchd` 可用链路的前提下，将 Vibe-OS 升级到符合 [cali_twitter_analysis.md](/Users/jungle/Desktop/dev/vibe-os/docs/cali_twitter_analysis.md) 的长期记忆检索架构。
 > 日期：2026-03-03
 
+> 实机验证与问题沉淀见：
+> [qmd_live_validation_findings_2026-03-03.md](/Users/kris/Desktop/Dev/Vibe-OS/docs/qmd_live_validation_findings_2026-03-03.md)
+
 ---
 
 ## 0. 为什么现在切 QMD
