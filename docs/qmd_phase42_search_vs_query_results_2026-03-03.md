@@ -216,9 +216,9 @@ corrected live baseline 结论：
 
 ---
 
-## 6. 当前 live 状态
+## 6. 当时的 live 状态
 
-截至本文档落地时，当前 live config 仍停在：
+在这轮 `search vs query` 实验结束时，live config 停在：
 
 - `memory.backend = "qmd"`
 - `memory.qmd.searchMode = "query"`
@@ -258,6 +258,11 @@ corrected live baseline 结论：
 
 - `search` baseline 可用
 - `query` candidate 全面回归
+
+补充说明：
+
+- 后续如果 live config 因其他实验继续变化，以实例当前配置为准
+- 本文档只描述这轮 `search vs query` 实验结束时的状态快照
 - 中文短 query（尤其 `减脂`）没有改善
 - 延迟显著恶化
 

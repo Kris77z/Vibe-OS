@@ -5,6 +5,8 @@
 > 目标：在保持部署机 live QMD 可用的前提下，系统化推进召回质量调优，而不是继续停留在“能不能跑”。
 > Phase 4.2 第一轮 `search vs query` 实验结果见：
 > [qmd_phase42_search_vs_query_results_2026-03-03.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_phase42_search_vs_query_results_2026-03-03.md)
+> Phase 4.2 `mission_log` 实验结果见：
+> [qmd_phase42_mission_log_results_2026-03-03.md](/Users/kris/Desktop/Dev/Vibe-OS/docs/qmd_phase42_mission_log_results_2026-03-03.md)
 
 日期：2026-03-03
 
@@ -200,6 +202,14 @@ node scripts/qmd_compare_eval_reports.mjs \
   --candidate .logs/qmd-eval/mission-log-candidate.json \
   --output .logs/qmd-eval/search-vs-mission-log.md
 ```
+
+当前 live 实验结论（2026-03-03）：
+
+- `验证 remote runner` 明显改善
+- `remote digestion` 出现 mission-log 结果顶到 knowledge 结果前面的趋势
+- `run_remote_digestion.mjs` 仍未改善
+- 暂未看到 `AI Native / OpenClaw gateway` 这类高价值 query 被明显污染
+- 结论偏正面，但还不足以下“必须永久纳入 live”的最终判断
 
 ---
 
