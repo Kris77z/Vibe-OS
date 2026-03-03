@@ -3,6 +3,8 @@
 > 本文档承接 [implementation_plan.md](/Users/jungle/Desktop/dev/vibe-os/docs/implementation_plan.md) 阶段四。
 > 前置 live 结论见 [qmd_live_validation_findings_2026-03-03.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_live_validation_findings_2026-03-03.md)。
 > 目标：在保持部署机 live QMD 可用的前提下，系统化推进召回质量调优，而不是继续停留在“能不能跑”。
+> Phase 4.2 第一轮 `search vs query` 实验结果见：
+> [qmd_phase42_search_vs_query_results_2026-03-03.md](/Users/kris/Desktop/Dev/Vibe-OS/docs/qmd_phase42_search_vs_query_results_2026-03-03.md)
 
 日期：2026-03-03
 
@@ -134,6 +136,13 @@ node scripts/qmd_compare_eval_reports.mjs \
   --candidate .logs/qmd-eval/query-mode.json \
   --output .logs/qmd-eval/search-vs-query.md
 ```
+
+第一轮 live 结果（2026-03-03）：
+
+- `search` baseline 可用
+- `query` mode 在当前 live 条件下完整 matrix 超过 8 分钟未完成
+- 逐条 timed spot-check 中 8/8 query 触发 `qmd query ... timed out after 4000ms`
+- 当前阶段不建议把 live 默认模式切到 `query`
 
 ---
 
