@@ -1,3 +1,4 @@
+/* eslint-disable @raycast/prefer-title-case */
 import {
   Action,
   ActionPanel,
@@ -10,7 +11,7 @@ import {
   Toast,
 } from "@raycast/api";
 import { useState } from "react";
-import { callOpenClaw } from "./lib/openclaw";
+import { callOpenClaw, toUserFacingError } from "./lib/openclaw";
 
 export default function DumpToVibeOsCommand() {
   const [content, setContent] = useState("");
@@ -18,7 +19,7 @@ export default function DumpToVibeOsCommand() {
 
   async function submit() {
     if (!content.trim()) {
-      await showToast({ style: Toast.Style.Failure, title: "Nothing to dump" });
+      await showToast({ style: Toast.Style.Failure, title: "还没写内容" });
       return;
     }
 
@@ -31,11 +32,10 @@ export default function DumpToVibeOsCommand() {
       await closeMainWindow();
       await showHUD(reply);
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Unknown error";
       await showToast({
         style: Toast.Style.Failure,
-        title: "Dump failed",
-        message,
+        title: "倾倒失败",
+        message: toUserFacingError(error),
       });
     } finally {
       setIsLoading(false);
@@ -48,7 +48,7 @@ export default function DumpToVibeOsCommand() {
       actions={
         <ActionPanel>
           <Action.SubmitForm
-            title="Dump to Vibe-os"
+            title="倾倒到 Vibe-OS"
             icon={Icon.Download}
             onSubmit={submit}
           />
@@ -62,8 +62,8 @@ export default function DumpToVibeOsCommand() {
     >
       <Form.TextArea
         id="content"
-        title="Braindump"
-        placeholder="Drop the thought and move on..."
+        title="倾倒内容"
+        placeholder="把想法丢进来，回车就走。"
         value={content}
         onChange={setContent}
       />

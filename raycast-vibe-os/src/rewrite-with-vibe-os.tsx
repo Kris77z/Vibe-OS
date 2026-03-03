@@ -1,3 +1,4 @@
+/* eslint-disable @raycast/prefer-title-case */
 import {
   Action,
   ActionPanel,
@@ -9,7 +10,7 @@ import {
   Toast,
 } from "@raycast/api";
 import { useState } from "react";
-import { callOpenClaw } from "./lib/openclaw";
+import { callOpenClaw, toUserFacingError } from "./lib/openclaw";
 
 const DEFAULT_INSTRUCTION = "把这段话改得更短、更清楚，保留原意。";
 
@@ -23,7 +24,7 @@ export default function RewriteWithVibeOsCommand() {
     if (!sourceText.trim()) {
       await showToast({
         style: Toast.Style.Failure,
-        title: "Source text is empty",
+        title: "原文还是空的",
       });
       return;
     }
@@ -40,11 +41,10 @@ export default function RewriteWithVibeOsCommand() {
       });
       setResult(nextResult);
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Unknown error";
       await showToast({
         style: Toast.Style.Failure,
-        title: "Rewrite failed",
-        message,
+        title: "改写失败",
+        message: toUserFacingError(error),
       });
     } finally {
       setIsLoading(false);
@@ -80,7 +80,7 @@ export default function RewriteWithVibeOsCommand() {
       actions={
         <ActionPanel>
           <Action.SubmitForm
-            title="Rewrite with Vibe-os"
+            title="用 Vibe-OS 改写"
             icon={Icon.Pencil}
             onSubmit={submit}
           />
@@ -94,14 +94,14 @@ export default function RewriteWithVibeOsCommand() {
     >
       <Form.TextArea
         id="sourceText"
-        title="Source Text"
-        placeholder="Paste the text you want to rewrite..."
+        title="原文"
+        placeholder="贴进来要改的文本。"
         value={sourceText}
         onChange={setSourceText}
       />
       <Form.TextArea
         id="instruction"
-        title="Instruction"
+        title="要求"
         placeholder={DEFAULT_INSTRUCTION}
         value={instruction}
         onChange={setInstruction}
