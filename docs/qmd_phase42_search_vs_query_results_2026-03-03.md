@@ -1,8 +1,8 @@
 # QMD Phase 4.2 实验结果：Search vs Query（2026-03-03）
 
 > 目的：记录这轮在部署机 live instance 上完成的 `search` vs `query` 对比实验结论。
-> 上位实验计划见 [qmd_phase2_experiment_plan.md](/Users/kris/Desktop/Dev/Vibe-OS/docs/qmd_phase2_experiment_plan.md)。
-> 前置 live 基线见 [qmd_live_validation_findings_2026-03-03.md](/Users/kris/Desktop/Dev/Vibe-OS/docs/qmd_live_validation_findings_2026-03-03.md)。
+> 上位实验计划见 [qmd_phase2_experiment_plan.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_phase2_experiment_plan.md)。
+> 前置 live 基线见 [qmd_live_validation_findings_2026-03-03.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_live_validation_findings_2026-03-03.md)。
 
 日期：2026-03-03
 

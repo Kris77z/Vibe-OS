@@ -4,7 +4,7 @@
 > 前置 live 结论见 [qmd_live_validation_findings_2026-03-03.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_live_validation_findings_2026-03-03.md)。
 > 目标：在保持部署机 live QMD 可用的前提下，系统化推进召回质量调优，而不是继续停留在“能不能跑”。
 > Phase 4.2 第一轮 `search vs query` 实验结果见：
-> [qmd_phase42_search_vs_query_results_2026-03-03.md](/Users/kris/Desktop/Dev/Vibe-OS/docs/qmd_phase42_search_vs_query_results_2026-03-03.md)
+> [qmd_phase42_search_vs_query_results_2026-03-03.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_phase42_search_vs_query_results_2026-03-03.md)
 
 日期：2026-03-03
 
@@ -49,6 +49,8 @@
   [openclaw.vibe-os.instance.qmd-query-mode-overlay.example.json5](/Users/jungle/Desktop/dev/vibe-os/docs/openclaw.vibe-os.instance.qmd-query-mode-overlay.example.json5)
 - mission log overlay：
   [openclaw.vibe-os.instance.qmd-mission-log-overlay.example.json5](/Users/jungle/Desktop/dev/vibe-os/docs/openclaw.vibe-os.instance.qmd-mission-log-overlay.example.json5)
+- mission log runbook：
+  [qmd_phase42_mission_log_experiment_runbook.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_phase42_mission_log_experiment_runbook.md)
 - daily memory overlay：
   [openclaw.vibe-os.instance.qmd-daily-memory-overlay.example.json5](/Users/jungle/Desktop/dev/vibe-os/docs/openclaw.vibe-os.instance.qmd-daily-memory-overlay.example.json5)
 
@@ -115,6 +117,8 @@ run_remote_digestion.mjs
 ```bash
 node scripts/qmd_eval_matrix.mjs \
   --label search-baseline \
+  --profile vibe-os \
+  --instance-root /Users/kris/instances/vibe-os \
   --format json \
   --output .logs/qmd-eval/search-baseline.json
 ```
@@ -124,6 +128,8 @@ node scripts/qmd_eval_matrix.mjs \
 ```bash
 node scripts/qmd_eval_matrix.mjs \
   --label query-mode \
+  --profile vibe-os \
+  --instance-root /Users/kris/instances/vibe-os \
   --format json \
   --output .logs/qmd-eval/query-mode.json
 ```
@@ -143,6 +149,7 @@ node scripts/qmd_compare_eval_reports.mjs \
 - `query` mode 在当前 live 条件下完整 matrix 超过 8 分钟未完成
 - 逐条 timed spot-check 中 8/8 query 触发 `qmd query ... timed out after 4000ms`
 - 当前阶段不建议把 live 默认模式切到 `query`
+- 后续所有 live eval 都应显式注入 `--profile` + `--instance-root`，避免误打到默认 `~/.openclaw`
 
 ---
 
@@ -173,6 +180,26 @@ node scripts/qmd_compare_eval_reports.mjs \
 ### 3.4 验收口径
 
 只有在“任务召回明显提升”且“不会大面积污染原有高密度结果”时，才纳入 live 白名单。
+
+推荐执行：
+
+```bash
+node scripts/qmd_eval_matrix.mjs \
+  --label mission-log-candidate \
+  --profile vibe-os \
+  --instance-root /Users/kris/instances/vibe-os \
+  --format json \
+  --output .logs/qmd-eval/mission-log-candidate.json
+```
+
+再和当前 search baseline 对比：
+
+```bash
+node scripts/qmd_compare_eval_reports.mjs \
+  --base .logs/qmd-eval/search-baseline.json \
+  --candidate .logs/qmd-eval/mission-log-candidate.json \
+  --output .logs/qmd-eval/search-vs-mission-log.md
+```
 
 ---
 

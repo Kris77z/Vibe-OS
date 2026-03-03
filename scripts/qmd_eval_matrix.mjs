@@ -21,6 +21,10 @@ function parseArgs(argv) {
     format: "markdown",
     label: "baseline",
     queriesFile: defaultQueriesFile,
+    profile: "",
+    stateDir: "",
+    configPath: "",
+    instanceRoot: "",
   };
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -46,6 +50,22 @@ function parseArgs(argv) {
         options.queriesFile = next;
         index += 1;
         break;
+      case "profile":
+        options.profile = next;
+        index += 1;
+        break;
+      case "state-dir":
+        options.stateDir = next;
+        index += 1;
+        break;
+      case "config-path":
+        options.configPath = next;
+        index += 1;
+        break;
+      case "instance-root":
+        options.instanceRoot = next;
+        index += 1;
+        break;
       case "output":
         options.output = next;
         index += 1;
@@ -69,6 +89,8 @@ function parseArgs(argv) {
 function printHelp() {
   console.log(`Usage:
   node scripts/qmd_eval_matrix.mjs [--label NAME] [--agent main] [--queries-file PATH] [--output PATH] [--format markdown|json]
+                                [--profile vibe-os] [--state-dir PATH] [--config-path PATH]
+                                [--instance-root /Users/.../instances/vibe-os]
 
 Purpose:
   Run a fixed QMD memory-search query set against the current OpenClaw config and save a comparable report.
@@ -88,7 +110,33 @@ function readQueries(filePath) {
     .filter((line) => line && !line.startsWith("#"));
 }
 
-function runOpenClaw(args) {
+function resolveRuntimeEnv(options) {
+  const env = { ...process.env };
+
+  if (options.instanceRoot) {
+    const instanceRoot = path.resolve(options.instanceRoot);
+    if (!options.stateDir) {
+      options.stateDir = path.join(instanceRoot, "state");
+    }
+    if (!options.configPath) {
+      options.configPath = path.join(instanceRoot, "config", "openclaw.json");
+    }
+  }
+
+  if (options.profile) {
+    env.OPENCLAW_PROFILE = options.profile;
+  }
+  if (options.stateDir) {
+    env.OPENCLAW_STATE_DIR = path.resolve(options.stateDir);
+  }
+  if (options.configPath) {
+    env.OPENCLAW_CONFIG_PATH = path.resolve(options.configPath);
+  }
+
+  return env;
+}
+
+function runOpenClaw(args, env) {
   try {
     return {
       ok: true,
@@ -96,7 +144,7 @@ function runOpenClaw(args) {
         cwd: repoRoot,
         encoding: "utf8",
         stdio: ["ignore", "pipe", "pipe"],
-        env: process.env,
+        env,
       }).trim(),
     };
   } catch (error) {
@@ -107,19 +155,20 @@ function runOpenClaw(args) {
   }
 }
 
-function runStatus(agent) {
-  return runOpenClaw(["memory", "status", "--agent", agent, "--deep"]);
+function runStatus(agent, env) {
+  return runOpenClaw(["memory", "status", "--agent", agent, "--deep"], env);
 }
 
-function runQuery(agent, query) {
-  return runOpenClaw(["memory", "search", "--agent", agent, "--query", query]);
+function runQuery(agent, query, env) {
+  return runOpenClaw(["memory", "search", "--agent", agent, "--query", query], env);
 }
 
 function buildReport(options, queries) {
-  const status = runStatus(options.agent);
+  const runtimeEnv = resolveRuntimeEnv(options);
+  const status = runStatus(options.agent, runtimeEnv);
   const results = queries.map((query) => ({
     query,
-    ...runQuery(options.agent, query),
+    ...runQuery(options.agent, query, runtimeEnv),
   }));
 
   return {
@@ -128,6 +177,11 @@ function buildReport(options, queries) {
     cwd: process.cwd(),
     label: options.label,
     agent: options.agent,
+    runtime: {
+      profile: runtimeEnv.OPENCLAW_PROFILE || null,
+      stateDir: runtimeEnv.OPENCLAW_STATE_DIR || null,
+      configPath: runtimeEnv.OPENCLAW_CONFIG_PATH || null,
+    },
     queriesFile: path.resolve(
       path.isAbsolute(options.queriesFile)
         ? options.queriesFile
@@ -146,6 +200,9 @@ function renderMarkdown(report) {
   lines.push(`- Host: ${report.host}`);
   lines.push(`- Agent: ${report.agent}`);
   lines.push(`- Queries file: ${report.queriesFile}`);
+  lines.push(`- Profile: ${report.runtime?.profile || "(default)"}`);
+  lines.push(`- State dir: ${report.runtime?.stateDir || "(default)"}`);
+  lines.push(`- Config path: ${report.runtime?.configPath || "(default)"}`);
   lines.push("");
   lines.push("## Memory Status");
   lines.push("");
