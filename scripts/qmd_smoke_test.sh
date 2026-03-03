@@ -34,6 +34,27 @@ resolve_cmd() {
   command -v "$raw" 2>/dev/null
 }
 
+resolve_with_fallbacks() {
+  local raw="$1"
+  shift
+
+  local resolved=""
+  resolved="$(resolve_cmd "$raw" || true)"
+  if [[ -n "$resolved" ]]; then
+    printf '%s\n' "$resolved"
+    return 0
+  fi
+
+  local candidate
+  for candidate in "$@"; do
+    [[ -x "$candidate" ]] || continue
+    printf '%s\n' "$candidate"
+    return 0
+  done
+
+  return 1
+}
+
 contains_text() {
   local needle="$1"
   local haystack="$2"
@@ -107,7 +128,11 @@ done
 WORKSPACE_ROOT="$(cd "$WORKSPACE_ROOT" 2>/dev/null && pwd)" || fail "workspace root not found: $WORKSPACE_ROOT"
 mkdir -p "$STATE_DIR"
 STATE_DIR="$(cd "$STATE_DIR" 2>/dev/null && pwd)" || fail "state dir not accessible: $STATE_DIR"
-QMD_BIN="$(resolve_cmd "$QMD_COMMAND" || true)"
+if [[ "$QMD_COMMAND" == "qmd" ]]; then
+  QMD_BIN="$(resolve_with_fallbacks "$QMD_COMMAND" "$HOME/.bun/bin/qmd" || true)"
+else
+  QMD_BIN="$(resolve_cmd "$QMD_COMMAND" || true)"
+fi
 [[ -n "$QMD_BIN" ]] || fail "qmd not found: $QMD_COMMAND"
 
 [[ -f "$WORKSPACE_ROOT/MEMORY.md" ]] || fail "missing $WORKSPACE_ROOT/MEMORY.md"

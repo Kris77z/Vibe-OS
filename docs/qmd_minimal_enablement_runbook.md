@@ -56,12 +56,28 @@ scripts/check_qmd_prereqs.sh \
   --state-dir /Users/openclaw-svc/instances/vibe-os/state
 ```
 
+实测安装口径补充：
+
+```bash
+curl -fsSL https://bun.sh/install | bash
+PATH="$HOME/.bun/bin:$PATH" bun install -g @tobilu/qmd
+```
+
+说明：
+
+- 当前机器验证中，`bun install -g https://github.com/tobi/qmd` 会落成源码 checkout，可能没有可直接执行的 `dist/`
+- 新版 preflight / smoke test 脚本会优先探测：
+  - `~/.bun/bin/bun`
+  - `~/.bun/bin/qmd`
+  - `/opt/homebrew/opt/sqlite/bin/sqlite3`
+
 通过标准：
 
 - `openclaw`、`bun`、`qmd`、`sqlite3` 可执行
 - workspace 关键文件存在
 - state dir 可写
-- SQLite 编译选项里包含 `ENABLE_LOAD_EXTENSION`，或至少被脚本标记为需补 Homebrew sqlite
+- 如果 `sqlite3` 编译选项缺少 `ENABLE_LOAD_EXTENSION`，只视为 advisory warning
+- 真实是否可用，以 `scripts/qmd_smoke_test.sh` 和后续 `openclaw memory status --deep` 的 vector probe 结果为准
 
 ### Step 2. QMD 最小启动验证
 

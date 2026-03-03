@@ -31,6 +31,41 @@ resolve_cmd() {
   command -v "$raw" 2>/dev/null
 }
 
+resolve_with_fallbacks() {
+  local raw="$1"
+  shift
+
+  local resolved=""
+  resolved="$(resolve_cmd "$raw" || true)"
+  if [[ -n "$resolved" ]]; then
+    printf '%s\n' "$resolved"
+    return 0
+  fi
+
+  local candidate
+  for candidate in "$@"; do
+    [[ -x "$candidate" ]] || continue
+    printf '%s\n' "$candidate"
+    return 0
+  done
+
+  return 1
+}
+
+resolve_preferring_fallbacks() {
+  local raw="$1"
+  shift
+
+  local candidate
+  for candidate in "$@"; do
+    [[ -x "$candidate" ]] || continue
+    printf '%s\n' "$candidate"
+    return 0
+  done
+
+  resolve_cmd "$raw"
+}
+
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --workspace-root)
@@ -66,16 +101,20 @@ OPENCLAW_BIN="$(resolve_cmd openclaw || true)"
 [[ -n "$OPENCLAW_BIN" ]] || fail "openclaw not found in PATH"
 pass "openclaw: $OPENCLAW_BIN ($("$OPENCLAW_BIN" --version 2>/dev/null || echo 'version unknown'))"
 
-BUN_BIN="$(resolve_cmd bun || true)"
+BUN_BIN="$(resolve_with_fallbacks bun "$HOME/.bun/bin/bun" || true)"
 [[ -n "$BUN_BIN" ]] || fail "bun not found in PATH"
 pass "bun: $BUN_BIN ($("$BUN_BIN" --version 2>/dev/null || echo 'version unknown'))"
 
-QMD_BIN="$(resolve_cmd "$QMD_COMMAND" || true)"
+if [[ "$QMD_COMMAND" == "qmd" ]]; then
+  QMD_BIN="$(resolve_with_fallbacks "$QMD_COMMAND" "$HOME/.bun/bin/qmd" || true)"
+else
+  QMD_BIN="$(resolve_cmd "$QMD_COMMAND" || true)"
+fi
 [[ -n "$QMD_BIN" ]] || fail "qmd not found: $QMD_COMMAND"
 "$QMD_BIN" --help >/dev/null 2>&1 || fail "qmd executable exists but '--help' failed"
 pass "qmd: $QMD_BIN"
 
-SQLITE_BIN="$(resolve_cmd sqlite3 || true)"
+SQLITE_BIN="$(resolve_preferring_fallbacks sqlite3 "/opt/homebrew/opt/sqlite/bin/sqlite3" || true)"
 [[ -n "$SQLITE_BIN" ]] || fail "sqlite3 not found in PATH"
 pass "sqlite3: $SQLITE_BIN ($("$SQLITE_BIN" --version 2>/dev/null || echo 'version unknown'))"
 
@@ -97,7 +136,7 @@ pass "state dir is writable"
 if "$SQLITE_BIN" ':memory:' 'pragma compile_options;' 2>/dev/null | grep -q 'ENABLE_LOAD_EXTENSION'; then
   pass "sqlite3 reports ENABLE_LOAD_EXTENSION"
 else
-  warn "sqlite3 does not report ENABLE_LOAD_EXTENSION; on macOS you likely want Homebrew sqlite before enabling QMD"
+  warn "sqlite3 does not report ENABLE_LOAD_EXTENSION; treat this as advisory only and trust the real QMD/OpenClaw vector probe during smoke test and memory status"
 fi
 
 QMD_STATE_ROOT="$STATE_DIR/agents/main/qmd"
