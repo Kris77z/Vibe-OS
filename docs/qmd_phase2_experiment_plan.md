@@ -230,6 +230,41 @@ node scripts/qmd_compare_eval_reports.mjs \
 2. 把“开放任务 / 跟进项 / 已完成事项”拆开，避免 TODO 语气挤占知识结果
 3. 保持 `search` 模式不变，只比较索引源切片策略
 
+2026-03-04 基线复跑记录（部署机本机，QMD baseline refresh）：
+
+- 首次在受限环境执行 `memory index` 触发 `SQLITE_CANTOPEN`（`unable to open database file`），属于实例 state 目录写权限受限导致的假故障
+- 在部署机宿主权限下执行：
+
+```bash
+OPENCLAW_STATE_DIR=/Users/kris/instances/vibe-os/state \
+OPENCLAW_CONFIG_PATH=/Users/kris/instances/vibe-os/config/openclaw.json \
+/opt/homebrew/bin/openclaw memory index --agent main --force
+```
+
+- reindex 成功后状态：
+  - `Indexed: 6/8 files · 6 chunks`
+  - store: `~/instances/vibe-os/state/agents/main/qmd/xdg-cache/qmd/index.sqlite`
+- 复跑 baseline（显式注入 profile/instance/openclaw-bin）：
+
+```bash
+node scripts/qmd_eval_matrix.mjs \
+  --label search-baseline-reindex \
+  --profile vibe-os \
+  --instance-root /Users/kris/instances/vibe-os \
+  --openclaw-bin /opt/homebrew/bin/openclaw \
+  --format json \
+  --output .logs/qmd-eval/search-baseline-reindex-2026-03-04.json
+```
+
+- 结果摘要：
+  - `8/8` query 执行成功
+  - `No matches` 从 `8` 条降到 `2` 条（`减脂`、`run_remote_digestion.mjs`）
+  - 对比旧 baseline：`Changed 6 / Same 2`
+- 产物：
+  - `.logs/qmd-eval/search-baseline-reindex-2026-03-04.json`
+  - `.logs/qmd-eval/search-baseline-vs-reindex-2026-03-04.md`
+- 备注：输出中持续出现 telegram allowlist doctor warning，但不影响本轮 QMD baseline 结论
+
 ---
 
 ## 4. 实验三：Daily Memory 纳入评估
