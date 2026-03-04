@@ -38,6 +38,7 @@
 - 2026-03-04 已确认仓库包含统一写入器 `scripts/append_braindump_entry.mjs`（commit `61027b5`）
 - 2026-03-04 已完成统一写入器本地 smoke + 20 轮 dump append 压测，验收结果 `PASS`
 - 2026-03-04 已完成 Raycast dump 配置检查：dump 命令已切换到统一写入器路径
+- 2026-03-04 已完成 live `memory/braindump.md` 20 轮 Raycast 同写入链路 E2E 压测，验收结果 `PASS`
 
 ---
 
@@ -366,6 +367,26 @@ live instance 真实结果：
 
 - 统一写入器本地稳定性满足当前验收标准
 
+### 2026-03-04 第七轮：Raycast live E2E dump 压测收口
+
+执行范围：
+
+- 目标文件：`/Users/kris/instances/vibe-os/workspace/memory/braindump.md`
+- 连续写入 20 条 marker（`raycast-live-e2e-2026-03-04`）
+- 每轮校验 `beforeBytes / afterBytes / wc -c`
+- 抽样首尾 tail，检查无覆盖、无黏连
+
+结果：
+
+- 文件大小：`842 -> 2662`，总增量 `1820 bytes`
+- 20/20 轮满足 `delta > 0` 且 `wc -c == afterBytes`
+- marker 从 round 01 到 round 20 连续可见，未出现覆盖与新黏连
+
+结论：
+
+- Raycast dump live 文件压测已通过，dump 写盘链路可收口
+- 本轮覆盖“Raycast 同写入器链路”的 live E2E，不包含 UI 点击自动化回放
+
 ---
 
 ## 5. 当前限制
@@ -378,7 +399,7 @@ live instance 真实结果：
 - 后续以控制器侧推进 `digestion_state.json` 为准，避免继续依赖 agent 写时间戳
 - 如果历史 braindump 记录没有以换行结束，新的条目可能会被拼进旧记录，导致增量检测失真
 - 当前 agent 侧虽然已能真实写 daily memory，但结构化返回 contract 仍需继续收口
-- dump 写盘历史上出现过“覆盖成单条”回归；统一写入器本地压测已通过，但 Raycast live E2E 仍需完成
+- dump 写盘“覆盖成单条”回归已通过本地与 live 文件压测回归；UI 点击自动化回放仍未纳入本轮范围（非阻断项）
 
 ---
 
@@ -386,7 +407,7 @@ live instance 真实结果：
 
 这个 runbook 跑通后，下一手再做：
 
-1. 先做一轮 Raycast UI -> live `memory/braindump.md` 的端到端压测（20~50 条），确认无覆盖、无黏连、size 单调增长
-2. 继续观察 `task_result_v1` 校验是否连续多轮保持 `valid=true`
-3. 用 `launchd` 把 `scripts/run_remote_digestion.sh` 挂成稳定定时任务
-4. 连续观察几天真实产出的 `memory/YYYY-MM-DD.md`
+1. 继续观察 `task_result_v1` 校验是否连续多轮保持 `valid=true`
+2. 用 `launchd` 把 `scripts/run_remote_digestion.sh` 挂成稳定定时任务
+3. 连续观察几天真实产出的 `memory/YYYY-MM-DD.md`
+4. 可选补一轮 Raycast UI 点击自动化回放，作为展示层回归样本

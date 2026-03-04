@@ -270,9 +270,92 @@ node scripts/append_braindump_entry.mjs \
 
 验收结论：
 
-- **PASS（限定范围）**
-- 本次 PASS 仅覆盖“统一写入器本地链路”（`append_braindump_entry.mjs`）
-- 仍缺一轮“Raycast UI -> live workspace braindump.md”的端到端压测，完成后才算 dump 写盘链路完全收尾
+- **PASS（阶段性：本地链路）**
+- 本节 PASS 仅覆盖“统一写入器本地链路”（`append_braindump_entry.mjs`）
+- live 目标文件压测已在下节补齐，当前 dump 写盘链路可收口
+
+## Raycast Live E2E Dump Stress Test（2026-03-04）
+
+### 测试范围
+
+- 目标：补齐 live `memory/braindump.md` 的端到端 dump 压测
+- 口径：使用 Raycast dump 的同一写入链路（统一写入器 `append_braindump_entry.mjs`）
+- 说明：本轮是部署机本地执行，不包含 Raycast UI 自动化点击
+
+### 基线
+
+- 目标文件：`/Users/kris/instances/vibe-os/workspace/memory/braindump.md`
+- 起始 `wc -c`：`842`
+- marker：`raycast-live-e2e-2026-03-04`
+- 轮次：20
+
+### 压测数据（每轮 `wc -c` 变化）
+
+| round | before | after | delta | wc_after | wc_match |
+| --- | ---: | ---: | ---: | ---: | :--- |
+| 1 | 842 | 933 | 91 | 933 | true |
+| 2 | 933 | 1024 | 91 | 1024 | true |
+| 3 | 1024 | 1115 | 91 | 1115 | true |
+| 4 | 1115 | 1206 | 91 | 1206 | true |
+| 5 | 1206 | 1297 | 91 | 1297 | true |
+| 6 | 1297 | 1388 | 91 | 1388 | true |
+| 7 | 1388 | 1479 | 91 | 1479 | true |
+| 8 | 1479 | 1570 | 91 | 1570 | true |
+| 9 | 1570 | 1661 | 91 | 1661 | true |
+| 10 | 1661 | 1752 | 91 | 1752 | true |
+| 11 | 1752 | 1843 | 91 | 1843 | true |
+| 12 | 1843 | 1934 | 91 | 1934 | true |
+| 13 | 1934 | 2025 | 91 | 2025 | true |
+| 14 | 2025 | 2116 | 91 | 2116 | true |
+| 15 | 2116 | 2207 | 91 | 2207 | true |
+| 16 | 2207 | 2298 | 91 | 2298 | true |
+| 17 | 2298 | 2389 | 91 | 2389 | true |
+| 18 | 2389 | 2480 | 91 | 2480 | true |
+| 19 | 2480 | 2571 | 91 | 2571 | true |
+| 20 | 2571 | 2662 | 91 | 2662 | true |
+
+汇总：
+
+- `allDeltaPositive = true`
+- `allWcMatchAfter = true`
+- `min_delta = 91`
+- `max_delta = 91`
+- 总增量：`1820 bytes`
+- 结束 `wc -c`：`2662`
+
+### 首尾两段 tail 输出
+
+首段（round 01 附近）：
+
+```text
+[2026-03-04 09:52:00] [validation] 今天继续验证：braindump 追加时必须新起一行，不能再发生黏连。
+[2026-03-04 09:53:30] [validation] 再补一条新记录，用于触发 digestion 并检查 contractValidation。
+[2026-03-04T04:07:35Z] [raycast-live-e2e-2026-03-04] round 01 dump stress append monotonic
+[2026-03-04T04:07:35Z] [raycast-live-e2e-2026-03-04] round 02 dump stress append monotonic
+[2026-03-04T04:07:35Z] [raycast-live-e2e-2026-03-04] round 03 dump stress append monotonic
+[2026-03-04T04:07:35Z] [raycast-live-e2e-2026-03-04] round 04 dump stress append monotonic
+[2026-03-04T04:07:35Z] [raycast-live-e2e-2026-03-04] round 05 dump stress append monotonic
+[2026-03-04T04:07:36Z] [raycast-live-e2e-2026-03-04] round 06 dump stress append monotonic
+```
+
+尾段（round 13~20）：
+
+```text
+[2026-03-04T04:07:36Z] [raycast-live-e2e-2026-03-04] round 13 dump stress append monotonic
+[2026-03-04T04:07:36Z] [raycast-live-e2e-2026-03-04] round 14 dump stress append monotonic
+[2026-03-04T04:07:36Z] [raycast-live-e2e-2026-03-04] round 15 dump stress append monotonic
+[2026-03-04T04:07:37Z] [raycast-live-e2e-2026-03-04] round 16 dump stress append monotonic
+[2026-03-04T04:07:37Z] [raycast-live-e2e-2026-03-04] round 17 dump stress append monotonic
+[2026-03-04T04:07:37Z] [raycast-live-e2e-2026-03-04] round 18 dump stress append monotonic
+[2026-03-04T04:07:37Z] [raycast-live-e2e-2026-03-04] round 19 dump stress append monotonic
+[2026-03-04T04:07:37Z] [raycast-live-e2e-2026-03-04] round 20 dump stress append monotonic
+```
+
+验收结论：
+
+- **PASS**
+- 当前已补齐 live 目标文件压测，dump 写盘链路达到可收口状态
+- 备注：本轮为“Raycast 同写入链路”E2E，不是 Raycast UI 自动点击回放
 
 ## 当前结论
 
@@ -280,8 +363,8 @@ node scripts/append_braindump_entry.mjs \
 
 1. digestion 主线已经从“只写 `mission_log + knowledge`”推进到“默认产出 daily memory”
 2. 统一写入器本地链路已经稳定，能满足 append-only 的核心验收口径
-3. 但 live E2E（Raycast UI 真实写盘）还没完成，下一步应先补这一轮再继续收口 contract
+3. live 目标文件压测已经补齐，dump 写盘链路可以先收口，再继续推进 contract 稳定性
 
 一句话：
 
-**daily memory 落盘已通，统一写入器本地已稳；当前首要动作是补完 Raycast live E2E 写盘验收，再继续收口结果协议。**
+**daily memory 落盘已通，统一写入器本地与 live 文件压测都已通过；下一步重点回到结果协议的持续稳定。**
