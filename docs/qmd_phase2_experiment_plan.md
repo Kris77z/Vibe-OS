@@ -249,6 +249,20 @@ scripts/qmd_run_eval.sh \
 - 与 2026-03-03 baseline 对比为 `Changed 6 / Same 2`，主要是分值波动，不是结构性召回退化
 - `remote digestion` query 里 `mission_log` 结果重新出现到前排，说明该源在任务线索召回上仍有价值
 
+2026-03-04 search-only 对比结论（见 [qmd_phase42_mission_log_experiment_runbook.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_phase42_mission_log_experiment_runbook.md#L149)）：
+
+- 对比口径：`search-baseline-no-mission-log` vs `mission-log-candidate`
+- 汇总结果：`Improved 0 / Regressed 0 / Changed 2 / Same 6`
+- `验证 remote runner` 从 `No matches` 变为命中 `memory/mission-log.md`
+- `remote digestion` 增加 `mission_log` 线索且排序前移
+- `AI Native` / `Crypto Markdown` / `Memory as File System` / `OpenClaw gateway` 无明显污染
+
+阶段决策（当前生效）：
+
+- live 默认继续保持 `search`，不切 `query`
+- `mission_log` 白名单在 `search` 模式下继续保留观察
+- 下一步优先做 `mission_log` 切片/去噪，再评估是否长期固化
+
 推荐下一轮方向：
 
 1. 从 `mission_log` 导出更高密度的 task-memory 子集，而不是整文件直灌

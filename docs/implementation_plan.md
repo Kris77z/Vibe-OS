@@ -137,6 +137,7 @@
 - 已在部署机完成 live 切换，当前 `memory.backend = qmd`
 - 已补 live 验证结论，明确下一阶段主问题是中文召回与白名单扩展
 - 已补 `qmd_eval_matrix.mjs` 的 `openclaw` 可执行路径收敛（支持 `--openclaw-bin` 与 `/opt/homebrew/bin/openclaw` fallback），避免部署机非交互 PATH 导致 `spawnSync openclaw ENOENT`
+- 2026-03-04 已完成 `search-only` 口径下的 `mission_log` 候选对比：`Changed 2 / Regressed 0`，当前判断可在 `search` 模式继续保留 `mission_log` 白名单观察
 
 对应文档：
 
@@ -144,6 +145,7 @@
 - [qmd_minimal_enablement_runbook.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_minimal_enablement_runbook.md)
 - [qmd_live_validation_findings_2026-03-03.md](/Users/jungle/Desktop/dev/vibe-os/docs/archive/2026-03/qmd_live_validation_findings_2026-03-03.md)
 - [qmd_phase2_experiment_plan.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_phase2_experiment_plan.md)
+- [qmd_phase42_mission_log_experiment_runbook.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_phase42_mission_log_experiment_runbook.md)
 
 对应代码 / 脚本：
 
@@ -158,6 +160,7 @@
 
 - QMD enablement 基线已完成
 - `query` 不适合当前默认交互路径
+- `search` 模式下可继续保留 `mission_log` 白名单观察
 - 后续不再继续扩自定义 retrieval 架构，主线改为把 digestion 输出收敛到 OpenClaw 官方 memory 层
 
 #### E. OpenClaw 官方 Memory 层收敛
