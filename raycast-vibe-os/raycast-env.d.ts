@@ -13,7 +13,15 @@ type ExtensionPreferences = {
   /** 网关令牌 - 调用 /v1/responses 所需的 Bearer Token */
   "gatewayToken": string,
   /** Agent ID - 要连接的 OpenClaw agent 标识 */
-  "agentId": string
+  "agentId": string,
+  /** Dump SSH Target - 倾倒写盘使用的 SSH 目标，格式 user@host */
+  "dumpSshTarget": string,
+  /** Dump SSH Key Path - 倾倒写盘使用的 SSH 私钥路径 */
+  "dumpSshKeyPath": string,
+  /** Dump Workspace Root - 部署机 workspace 根路径（写 memory/braindump.md） */
+  "dumpRemoteWorkspaceRoot": string,
+  /** Dump SSH Timeout Sec - 倾倒写盘 SSH 连接超时秒数 */
+  "dumpSshConnectTimeoutSec": string
 }
 
 /** Preferences accessible in all the extension's commands */

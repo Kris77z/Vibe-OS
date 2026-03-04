@@ -2,10 +2,14 @@ import { getPreferenceValues } from "@raycast/api";
 
 type BrainMode = "ask" | "dump" | "rewrite";
 
-interface OpenClawPreferences {
+export interface OpenClawPreferences {
   baseUrl: string;
   gatewayToken: string;
   agentId: string;
+  dumpSshTarget?: string;
+  dumpSshKeyPath?: string;
+  dumpRemoteWorkspaceRoot?: string;
+  dumpSshConnectTimeoutSec?: string;
 }
 
 interface OpenClawRequestOptions {

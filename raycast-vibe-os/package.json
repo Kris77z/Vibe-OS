@@ -44,6 +44,42 @@
       "required": true,
       "default": "main",
       "placeholder": "main"
+    },
+    {
+      "name": "dumpSshTarget",
+      "title": "Dump SSH Target",
+      "description": "倾倒写盘使用的 SSH 目标，格式 user@host",
+      "type": "textfield",
+      "required": false,
+      "default": "kris@annkimac.tail7f9f42.ts.net",
+      "placeholder": "kris@annkimac.tail7f9f42.ts.net"
+    },
+    {
+      "name": "dumpSshKeyPath",
+      "title": "Dump SSH Key Path",
+      "description": "倾倒写盘使用的 SSH 私钥路径",
+      "type": "textfield",
+      "required": false,
+      "default": "~/.ssh/id_ed25519_vibe_os_deploy",
+      "placeholder": "~/.ssh/id_ed25519_vibe_os_deploy"
+    },
+    {
+      "name": "dumpRemoteWorkspaceRoot",
+      "title": "Dump Workspace Root",
+      "description": "部署机 workspace 根路径（写 memory/braindump.md）",
+      "type": "textfield",
+      "required": false,
+      "default": "/Users/kris/instances/vibe-os/workspace",
+      "placeholder": "/Users/kris/instances/vibe-os/workspace"
+    },
+    {
+      "name": "dumpSshConnectTimeoutSec",
+      "title": "Dump SSH Timeout Sec",
+      "description": "倾倒写盘 SSH 连接超时秒数",
+      "type": "textfield",
+      "required": false,
+      "default": "8",
+      "placeholder": "8"
     }
   ],
   "commands": [

@@ -5,7 +5,7 @@ Private Raycast front-end for the remote `OpenClaw`-backed Vibe-OS brain.
 ## Commands
 
 - `问问 Vibe-OS`: ask the remote brain a normal question
-- `倾倒到 Vibe-OS`: send a quick braindump and get a short confirmation back
+- `倾倒到 Vibe-OS`: write braindump via deterministic SSH append, then return a short confirmation
 - `用 Vibe-OS 改写`: rewrite text with a concise instruction
 
 ## Preferences
@@ -13,6 +13,10 @@ Private Raycast front-end for the remote `OpenClaw`-backed Vibe-OS brain.
 - `Gateway Base URL`
 - `Gateway Token`
 - `Agent ID`
+- `Dump SSH Target`
+- `Dump SSH Key Path`
+- `Dump Workspace Root`
+- `Dump SSH Timeout Sec`
 
 Recommended local value for `Gateway Base URL`:
 
@@ -30,7 +34,7 @@ ssh -N -L 28789:127.0.0.1:18789 kris@annkimac.tail7f9f42.ts.net
 
 1. Keep the SSH tunnel open.
 2. Open Raycast and import or develop this extension from `raycast-vibe-os/`.
-3. Fill the three extension preferences.
+3. Fill the extension preferences (gateway + dump SSH fields).
 4. Run `问问 Vibe-OS` or `倾倒到 Vibe-OS`.
 
 ## Development

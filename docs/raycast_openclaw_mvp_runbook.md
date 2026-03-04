@@ -7,7 +7,7 @@
 截至 2026-03-02，这条链路已经在本机实测通过：
 
 - `问问 Vibe-OS` 成功返回
-- `倾倒到 Vibe-OS` 成功返回短确认句 `秒存`
+- `倾倒到 Vibe-OS` 改为 SSH 直写 `memory/braindump.md`，并返回本地短确认句
 - `用 Vibe-OS 改写` 成功返回改写结果
 
 因此这份 runbook 现在不只是计划文档，也是当前可复用的成功路径。
@@ -66,17 +66,25 @@ npm run dev
 
 ## 5. 填扩展 Preferences
 
-打开扩展设置后，填这三项：
+打开扩展设置后，填以下字段：
 
 - `Gateway Base URL`
 - `Gateway Token`
 - `Agent ID`
+- `Dump SSH Target`
+- `Dump SSH Key Path`
+- `Dump Workspace Root`
+- `Dump SSH Timeout Sec`
 
 建议值：
 
 ```text
 Gateway Base URL: http://127.0.0.1:28789
 Agent ID: main
+Dump SSH Target: kris@annkimac.tail7f9f42.ts.net
+Dump SSH Key Path: ~/.ssh/id_ed25519_vibe_os_deploy
+Dump Workspace Root: /Users/kris/instances/vibe-os/workspace
+Dump SSH Timeout Sec: 8
 ```
 
 ## 6. 命令验收
@@ -100,7 +108,8 @@ Agent ID: main
 通过标准：
 
 - 能返回简短确认句
-- 不展开闲聊
+- 远程 `memory/braindump.md` 文件大小单调增长
+- 新条目独立成行，不黏连旧条目
 
 ### 用 Vibe-OS 改写
 

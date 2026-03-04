@@ -11,7 +11,11 @@ import {
   Toast,
 } from "@raycast/api";
 import { useState } from "react";
-import { callOpenClaw, toUserFacingError } from "./lib/openclaw";
+import {
+  appendBraindumpEntry,
+  buildDumpAckMessage,
+  toDumpWriteError,
+} from "./lib/braindump-writer";
 
 export default function DumpToVibeOsCommand() {
   const [content, setContent] = useState("");
@@ -25,17 +29,15 @@ export default function DumpToVibeOsCommand() {
 
     setIsLoading(true);
     try {
-      const reply = await callOpenClaw({
-        mode: "dump",
-        prompt: content.trim(),
-      });
+      const normalized = content.trim();
+      await appendBraindumpEntry(normalized);
       await closeMainWindow();
-      await showHUD(reply);
+      await showHUD(buildDumpAckMessage(normalized));
     } catch (error) {
       await showToast({
         style: Toast.Style.Failure,
         title: "倾倒失败",
-        message: toUserFacingError(error),
+        message: toDumpWriteError(error),
       });
     } finally {
       setIsLoading(false);
