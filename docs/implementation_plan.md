@@ -149,6 +149,9 @@
 
 - [check_qmd_prereqs.sh](/Users/jungle/Desktop/dev/vibe-os/scripts/check_qmd_prereqs.sh)
 - [qmd_smoke_test.sh](/Users/jungle/Desktop/dev/vibe-os/scripts/qmd_smoke_test.sh)
+- [qmd_run_eval.sh](/Users/jungle/Desktop/dev/vibe-os/scripts/qmd_run_eval.sh)
+- [qmd_eval_matrix.mjs](/Users/jungle/Desktop/dev/vibe-os/scripts/qmd_eval_matrix.mjs)
+- [qmd_compare_eval_reports.mjs](/Users/jungle/Desktop/dev/vibe-os/scripts/qmd_compare_eval_reports.mjs)
 - [openclaw.vibe-os.instance.qmd-overlay.example.json5](/Users/jungle/Desktop/dev/vibe-os/docs/openclaw.vibe-os.instance.qmd-overlay.example.json5)
 
 当前判断：

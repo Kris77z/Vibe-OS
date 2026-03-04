@@ -47,12 +47,10 @@ openclaw memory status --agent main --deep
 如果还没有 corrected baseline，先跑：
 
 ```bash
-node scripts/qmd_eval_matrix.mjs \
+scripts/qmd_run_eval.sh \
   --label search-baseline \
-  --profile vibe-os \
   --instance-root /Users/kris/instances/vibe-os \
-  --format json \
-  --output .logs/qmd-eval/search-baseline.json
+  --force-reindex
 ```
 
 这份 baseline 后续作为统一对比面，不要覆盖成别的模式结果。
@@ -81,21 +79,11 @@ node scripts/qmd_eval_matrix.mjs \
 ## 4. 跑 candidate 评测
 
 ```bash
-node scripts/qmd_eval_matrix.mjs \
+scripts/qmd_run_eval.sh \
   --label mission-log-candidate \
-  --profile vibe-os \
   --instance-root /Users/kris/instances/vibe-os \
-  --format json \
-  --output .logs/qmd-eval/mission-log-candidate.json
-```
-
-再生成对比：
-
-```bash
-node scripts/qmd_compare_eval_reports.mjs \
-  --base .logs/qmd-eval/search-baseline.json \
-  --candidate .logs/qmd-eval/mission-log-candidate.json \
-  --output .logs/qmd-eval/search-vs-mission-log.md
+  --base-report .logs/qmd-eval/search-baseline.json \
+  --compare-output .logs/qmd-eval/search-vs-mission-log.md
 ```
 
 ---

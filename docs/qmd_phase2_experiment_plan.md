@@ -49,6 +49,8 @@
   [qmd_eval_matrix.mjs](/Users/jungle/Desktop/dev/vibe-os/scripts/qmd_eval_matrix.mjs)
 - 结果对比脚本：
   [qmd_compare_eval_reports.mjs](/Users/jungle/Desktop/dev/vibe-os/scripts/qmd_compare_eval_reports.mjs)
+- 部署机一键评测脚本：
+  [qmd_run_eval.sh](/Users/jungle/Desktop/dev/vibe-os/scripts/qmd_run_eval.sh)
 - query mode overlay：
   [openclaw.vibe-os.instance.qmd-query-mode-overlay.example.json5](/Users/jungle/Desktop/dev/vibe-os/docs/openclaw.vibe-os.instance.qmd-query-mode-overlay.example.json5)
 - mission log overlay：
@@ -119,34 +121,20 @@ run_remote_digestion.mjs
 推荐执行：
 
 ```bash
-node scripts/qmd_eval_matrix.mjs \
+scripts/qmd_run_eval.sh \
   --label search-baseline \
-  --profile vibe-os \
   --instance-root /Users/kris/instances/vibe-os \
-  --openclaw-bin /opt/homebrew/bin/openclaw \
-  --format json \
-  --output .logs/qmd-eval/search-baseline.json
+  --force-reindex
 ```
 
 切到 `query` overlay 后再跑：
 
 ```bash
-node scripts/qmd_eval_matrix.mjs \
+scripts/qmd_run_eval.sh \
   --label query-mode \
-  --profile vibe-os \
   --instance-root /Users/kris/instances/vibe-os \
-  --openclaw-bin /opt/homebrew/bin/openclaw \
-  --format json \
-  --output .logs/qmd-eval/query-mode.json
-```
-
-再生成对比摘要：
-
-```bash
-node scripts/qmd_compare_eval_reports.mjs \
-  --base .logs/qmd-eval/search-baseline.json \
-  --candidate .logs/qmd-eval/query-mode.json \
-  --output .logs/qmd-eval/search-vs-query.md
+  --base-report .logs/qmd-eval/search-baseline.json \
+  --compare-output .logs/qmd-eval/search-vs-query.md
 ```
 
 第一轮 live 结果（2026-03-03）：
@@ -157,6 +145,7 @@ node scripts/qmd_compare_eval_reports.mjs \
 - 当前阶段不建议把 live 默认模式切到 `query`
 - 后续所有 live eval 都应显式注入 `--profile` + `--instance-root`，避免误打到默认 `~/.openclaw`
 - 部署机非交互 shell 可能缺少 Homebrew PATH；评测命令应显式注入 `--openclaw-bin /opt/homebrew/bin/openclaw`
+- 统一建议优先通过 `scripts/qmd_run_eval.sh` 执行评测，避免部署机环境漂移
 
 ---
 
@@ -191,22 +180,11 @@ node scripts/qmd_compare_eval_reports.mjs \
 推荐执行：
 
 ```bash
-node scripts/qmd_eval_matrix.mjs \
+scripts/qmd_run_eval.sh \
   --label mission-log-candidate \
-  --profile vibe-os \
   --instance-root /Users/kris/instances/vibe-os \
-  --openclaw-bin /opt/homebrew/bin/openclaw \
-  --format json \
-  --output .logs/qmd-eval/mission-log-candidate.json
-```
-
-再和当前 search baseline 对比：
-
-```bash
-node scripts/qmd_compare_eval_reports.mjs \
-  --base .logs/qmd-eval/search-baseline.json \
-  --candidate .logs/qmd-eval/mission-log-candidate.json \
-  --output .logs/qmd-eval/search-vs-mission-log.md
+  --base-report .logs/qmd-eval/search-baseline.json \
+  --compare-output .logs/qmd-eval/search-vs-mission-log.md
 ```
 
 当前 live 实验结论（2026-03-03）：
