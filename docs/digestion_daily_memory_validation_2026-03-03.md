@@ -75,7 +75,8 @@ live `braindump.md` 中有一条历史记录没有以换行结束，导致第一
 当前状态：
 
 - prompt 已补“严格输出 contract”约束
-- 但尚未再次完成一轮 live 验证，证明 agent 一定会持续返回完全合法的 schema
+- 2026-03-04 已在部署机做了一轮本地实测，返回结果通过同口径校验（`valid = true`）
+- 但还需要更多轮次观察，确认不是偶发正确
 
 开发口径：
 
@@ -104,6 +105,51 @@ live `braindump.md` 中有一条历史记录没有以换行结束，导致第一
 
 - 这些内容属于真实运行期间产生的验证痕迹，不在本轮清理范围内
 - 后续如果要做 memory 内容清洗，应单独作为一次显式操作处理，不在这轮代码收口里顺手修改
+
+## 2026-03-04 复测记录（部署机本地）
+
+### 背景
+
+- 当天尝试直接执行 `node scripts/run_remote_digestion.mjs run` 仍被默认 SSH key 卡住：
+  - `~/.ssh/id_ed25519_vibe_os_deploy` 在这台机不存在
+- 因此改用部署机本地等价链路验证：
+  - 本机 gateway `/v1/responses`
+  - live workspace `memory/` 直接检查
+  - 本地运行与 `run_remote_digestion.mjs` 同口径的 `task_result_v1` 校验逻辑
+
+### 实测结果
+
+1. braindump 黏连复测
+   - 新增 `2026-03-04 09:52:00` 条目后，落盘为独立新行，没有再黏连到前一条
+   - 但历史黏连记录（2026-03-03 10:21 + 20:45 拼接）仍保留在旧内容中
+
+2. 新风险：dump 写入出现“覆盖成单条”现象
+   - 紧接着再写 `2026-03-04 09:53:30` 条目时，`braindump.md` 一度被覆盖为只剩最新一条
+   - 已在 live 现场恢复已知条目，并保留备份：
+     - `memory/braindump.md.bak.2026-03-04-verify`
+   - 这说明 append discipline 虽有改进，但写入路径仍存在高风险回归
+
+3. digestion + contract 校验复测
+   - 恢复后 `prepare` 正常识别新增区间（第 5 行）
+   - 本轮 digestion 返回为严格数组结构：
+     - `artifacts: []`
+     - `actions: []`
+     - `memoryWrites: []`
+     - `nextActions: []`
+     - `errors: []`
+   - 用 controller 同口径校验后结果为：
+     - `valid: true`
+     - `errors: []`
+
+4. 游标推进与复跑
+   - 已执行 `commit --end-line 5`
+   - `digestion_state.json` 当前为 `lastProcessedLine = 5`
+   - 复跑 `prepare` 返回 `noop`
+
+### 结论更新
+
+- 正向：`task_result_v1` 至少在这轮实测里已达到 machine-valid
+- 负向：braindump dump 模式仍存在“覆盖成单条”的高风险行为，优先级应高于 contract 优化
 
 ## 当前结论
 

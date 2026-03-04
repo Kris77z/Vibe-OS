@@ -128,6 +128,13 @@ node scripts/run_remote_digestion.mjs run
 - 已验证 `digestion_state.json` 可由控制器侧推进，而不是继续依赖 agent 写时间戳
 - 当前即使返回 contract 仍有偏差，控制器也会把校验错误显式带出，方便继续收口 schema
 
+如果当前机器本身就是部署机，且没有可用的 Tailscale SSH key，可用本地等价链路做验证：
+
+1. 在 live workspace 跑 `prepare` / `render-prompt`
+2. 直接调用本机 gateway `127.0.0.1:18789 /v1/responses`
+3. 用 `run_remote_digestion.mjs` 同口径校验逻辑检查 `task_result_v1`
+4. 手动 `commit --end-line <endLine>` 推进游标
+
 ### 2.4 包装成本地稳定入口
 
 ```bash
@@ -314,6 +321,28 @@ live instance 真实结果：
 - live `memory/2026-03-03.md` 与 `memory/braindump.md` 中保留了本轮 validation 内容；这是运行期真实痕迹，不在本轮代码收口中回滚
 - `task_result_v1` 的 prompt 约束已收紧，但还需要后续再做一轮 machine-strict 验证
 
+### 2026-03-04 第五轮：部署机本地复测（contract + append）
+
+背景：
+
+- 这台机是部署机本体；`run_remote_digestion.mjs` 默认 SSH key 仍缺失
+- 因此本轮使用部署机本地等价验证链路，而不是 remote SSH 路径
+
+结果：
+
+- 新增 `2026-03-04 09:52:00` 条目时，braindump 没有再黏连到上一条
+- 但再追加 `2026-03-04 09:53:30` 时，曾出现 `braindump.md` 被覆盖为单条的风险
+- 已恢复已知条目并保留备份：`memory/braindump.md.bak.2026-03-04-verify`
+- 本轮 digestion 返回通过同口径 `task_result_v1` 校验：
+  - `valid: true`
+  - `errors: []`
+- 游标已推进到 `lastProcessedLine = 5`，复跑 `prepare` 为 `noop`
+
+结论：
+
+- contract 收口出现正向进展（至少本轮 machine-valid）
+- 但 braindump 写入稳定性问题优先级更高，应先确保绝对 append-only 行为
+
 ---
 
 ## 5. 当前限制
@@ -326,6 +355,7 @@ live instance 真实结果：
 - 后续以控制器侧推进 `digestion_state.json` 为准，避免继续依赖 agent 写时间戳
 - 如果历史 braindump 记录没有以换行结束，新的条目可能会被拼进旧记录，导致增量检测失真
 - 当前 agent 侧虽然已能真实写 daily memory，但结构化返回 contract 仍需继续收口
+- dump 模式在特定轮次仍可能出现“覆盖成单条”行为，需要优先加防护
 
 ---
 
@@ -333,6 +363,7 @@ live instance 真实结果：
 
 这个 runbook 跑通后，下一手再做：
 
-1. 继续收口 `task_result_v1` 返回，避免再出现“结构接近但不完全符合 schema”的结果
-2. 用 `launchd` 把 `scripts/run_remote_digestion.sh` 挂成稳定定时任务
-3. 连续观察几天真实产出的 `memory/YYYY-MM-DD.md`
+1. 先修复 braindump 写入的覆盖风险，保证 append-only 稳定性
+2. 继续观察 `task_result_v1` 校验是否连续多轮保持 `valid=true`
+3. 用 `launchd` 把 `scripts/run_remote_digestion.sh` 挂成稳定定时任务
+4. 连续观察几天真实产出的 `memory/YYYY-MM-DD.md`
