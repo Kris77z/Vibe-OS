@@ -111,6 +111,11 @@ Dump SSH Timeout Sec: 8
 - 远程 `memory/braindump.md` 文件大小单调增长
 - 新条目独立成行，不黏连旧条目
 
+备注：
+
+- `倾倒到 Vibe-OS` 现在通过远程脚本 [append_braindump_entry.mjs](/Users/jungle/Desktop/dev/vibe-os/scripts/append_braindump_entry.mjs) 落盘。
+- 脚本会做并发锁、末尾换行补齐和 size 增长校验，避免“被覆盖成单条”回归。
+
 ### 用 Vibe-OS 改写
 
 输入原文和改写要求。

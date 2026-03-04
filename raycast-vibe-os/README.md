@@ -8,6 +8,10 @@ Private Raycast front-end for the remote `OpenClaw`-backed Vibe-OS brain.
 - `倾倒到 Vibe-OS`: write braindump via deterministic SSH append, then return a short confirmation
 - `用 Vibe-OS 改写`: rewrite text with a concise instruction
 
+`倾倒到 Vibe-OS` uses the shared writer script:
+
+- `scripts/append_braindump_entry.mjs`
+
 ## Preferences
 
 - `Gateway Base URL`

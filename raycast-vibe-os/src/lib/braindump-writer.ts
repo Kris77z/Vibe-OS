@@ -51,11 +51,7 @@ function resolveConfig(): DumpWriterConfig {
   };
 }
 
-function formatEntryTimestamp(date = new Date()): string {
-  return date.toISOString().replace(/\.\d{3}Z$/, "Z");
-}
-
-function buildBraindumpEntry(raw: string): string {
+function normalizeBraindumpContent(raw: string): string {
   const normalized = String(raw || "")
     .replace(/\r\n/g, "\n")
     .replace(/\r/g, "\n")
@@ -65,41 +61,10 @@ function buildBraindumpEntry(raw: string): string {
     throw new Error("EMPTY_BRAINDUMP_CONTENT");
   }
 
-  return `[${formatEntryTimestamp()}] ${normalized}`;
+  return normalized;
 }
 
-function buildRemoteAppendScript(remoteFilePath: string, entry: string): string {
-  const quotedFile = shellQuote(remoteFilePath);
-  const quotedEntry = shellQuote(entry);
-
-  return [
-    "set -euo pipefail",
-    `FILE=${quotedFile}`,
-    `ENTRY=${quotedEntry}`,
-    'LOCK_DIR="${FILE}.lockdir"',
-    'if ! mkdir "$LOCK_DIR" 2>/dev/null; then',
-    '  echo "LOCK_BUSY: braindump is being written by another process" >&2',
-    "  exit 75",
-    "fi",
-    'cleanup() { rmdir "$LOCK_DIR" >/dev/null 2>&1 || true; }',
-    "trap cleanup EXIT",
-    'mkdir -p "$(dirname "$FILE")"',
-    'touch "$FILE"',
-    'BEFORE_BYTES=$(wc -c < "$FILE" | tr -d " ")',
-    'if [ -s "$FILE" ] && [ "$(tail -c 1 "$FILE" | wc -l | tr -d " ")" -eq 0 ]; then',
-    "  printf '\\n' >> \"$FILE\"",
-    "fi",
-    'printf "%s\\n" "$ENTRY" >> "$FILE"',
-    'AFTER_BYTES=$(wc -c < "$FILE" | tr -d " ")',
-    'if [ "$AFTER_BYTES" -le "$BEFORE_BYTES" ]; then',
-    '  echo "APPEND_FAILED: braindump size did not increase" >&2',
-    "  exit 70",
-    "fi",
-    'printf \'{"status":"ok","path":"%s","beforeBytes":%s,"afterBytes":%s}\\n\' "$FILE" "$BEFORE_BYTES" "$AFTER_BYTES"',
-  ].join("\n");
-}
-
-function runSshScript(config: DumpWriterConfig, script: string): string {
+function runSshCommand(config: DumpWriterConfig, command: string): string {
   try {
     return execFileSync(
       "ssh",
@@ -115,12 +80,11 @@ function runSshScript(config: DumpWriterConfig, script: string): string {
         "-i",
         config.sshKeyPath,
         config.sshTarget,
-        "bash -lc 'cat >/tmp/vibe-os-append-braindump.sh && bash /tmp/vibe-os-append-braindump.sh'",
+        `bash -lc ${shellQuote(command)}`,
       ],
       {
         encoding: "utf8",
         stdio: ["pipe", "pipe", "pipe"],
-        input: script,
       },
     );
   } catch (error) {
@@ -135,12 +99,18 @@ export async function appendBraindumpEntry(
   content: string,
 ): Promise<AppendBraindumpResult> {
   const config = resolveConfig();
-  const entry = buildBraindumpEntry(content);
+  const normalizedContent = normalizeBraindumpContent(content);
   const remoteBraindumpPath = `${config.remoteWorkspaceRoot}/memory/braindump.md`;
-  const stdout = runSshScript(
-    config,
-    buildRemoteAppendScript(remoteBraindumpPath, entry),
-  );
+  const remoteAppendScriptPath = `${config.remoteWorkspaceRoot}/scripts/append_braindump_entry.mjs`;
+  const contentB64 = Buffer.from(normalizedContent, "utf8").toString("base64");
+  const remoteCommand = [
+    "set -euo pipefail",
+    `node ${shellQuote(remoteAppendScriptPath)} \\`,
+    `  --file ${shellQuote(remoteBraindumpPath)} \\`,
+    `  --content-b64 ${shellQuote(contentB64)}`,
+  ].join("\n");
+
+  const stdout = runSshCommand(config, remoteCommand);
   const jsonLine = String(stdout || "")
     .trim()
     .split("\n")
