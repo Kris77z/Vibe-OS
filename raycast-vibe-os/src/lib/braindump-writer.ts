@@ -36,7 +36,10 @@ function expandHomePath(value: string): string {
 
 function resolveConfig(): DumpWriterConfig {
   const prefs = getOpenClawPreferences();
-  const timeout = Number.parseInt(String(prefs.dumpSshConnectTimeoutSec || ""), 10);
+  const timeout = Number.parseInt(
+    String(prefs.dumpSshConnectTimeoutSec || ""),
+    10,
+  );
 
   return {
     sshTarget:
@@ -48,7 +51,8 @@ function resolveConfig(): DumpWriterConfig {
       String(prefs.dumpRemoteWorkspaceRoot || "").trim() ||
       DEFAULT_DUMP_WORKSPACE_ROOT,
     remoteScriptPath:
-      String(prefs.dumpRemoteScriptPath || "").trim() || DEFAULT_DUMP_SCRIPT_PATH,
+      String(prefs.dumpRemoteScriptPath || "").trim() ||
+      DEFAULT_DUMP_SCRIPT_PATH,
     sshConnectTimeoutSec:
       Number.isFinite(timeout) && timeout > 0
         ? timeout
@@ -146,7 +150,9 @@ export async function appendBraindumpEntry(
   try {
     parsed = JSON.parse(jsonLine) as AppendBraindumpResult;
   } catch (error) {
-    throw new Error(`APPEND_FAILED: invalid append result JSON (${String(error)})`);
+    throw new Error(
+      `APPEND_FAILED: invalid append result JSON (${String(error)})`,
+    );
   }
 
   if (parsed.status !== "ok") {
@@ -160,7 +166,8 @@ export function buildDumpAckMessage(content: string): string {
   const text = String(content || "");
 
   if (/(减脂|撸铁|健身|核心)/i.test(text)) return "核心收紧，走起";
-  if (/(美股|crypto|btc|eth|交易|仓位|纳指)/i.test(text)) return "确实逆天，先存证";
+  if (/(美股|crypto|btc|eth|交易|仓位|纳指)/i.test(text))
+    return "确实逆天，先存证";
   if (/(openclaw|qmd|agent|raycast|脚本|代码|workflow|api)/i.test(text))
     return "牛逼切点，已入库";
 
@@ -173,14 +180,21 @@ export function toDumpWriteError(error: unknown): string {
 
   if (!message) return "倾倒失败，请稍后再试。";
   if (message.includes("EMPTY_BRAINDUMP_CONTENT")) return "还没写内容";
-  if (message.includes("No such file or directory")) return "SSH key 路径不存在，请检查 Raycast 配置。";
-  if (message.includes("Permission denied")) return "SSH 鉴权失败，请检查 key 和远程权限。";
-  if (message.includes("Connection timed out")) return "SSH 连接超时，请检查隧道或网络。";
-  if (message.includes("Could not resolve hostname")) return "远程主机不可解析，请检查 SSH target。";
-  if (message.includes("SCRIPT_NOT_FOUND")) return "部署机缺少 append_braindump_entry.mjs，请先更新代码。";
-  if (message.includes("RUNTIME_NOT_FOUND")) return "部署机缺少 node/bun 运行时，请先安装后重试。";
+  if (message.includes("No such file or directory"))
+    return "SSH key 路径不存在，请检查 Raycast 配置。";
+  if (message.includes("Permission denied"))
+    return "SSH 鉴权失败，请检查 key 和远程权限。";
+  if (message.includes("Connection timed out"))
+    return "SSH 连接超时，请检查隧道或网络。";
+  if (message.includes("Could not resolve hostname"))
+    return "远程主机不可解析，请检查 SSH target。";
+  if (message.includes("SCRIPT_NOT_FOUND"))
+    return "部署机缺少 append_braindump_entry.mjs，请先更新代码。";
+  if (message.includes("RUNTIME_NOT_FOUND"))
+    return "部署机缺少 node/bun 运行时，请先安装后重试。";
   if (message.includes("LOCK_BUSY")) return "倾倒正在并发写入，稍后重试。";
-  if (message.includes("APPEND_FAILED")) return message.replace(/^APPEND_FAILED:\s*/, "");
+  if (message.includes("APPEND_FAILED"))
+    return message.replace(/^APPEND_FAILED:\s*/, "");
 
   return `倾倒失败：${message}`;
 }
