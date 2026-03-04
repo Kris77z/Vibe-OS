@@ -1,0 +1,14 @@
+{
+  // Apply on top of the live QMD baseline for mission-log slicing experiment.
+  // Replace direct mission_log indexing with distilled task_memory.md.
+
+  memory: {
+    qmd: {
+      paths: [
+        { name: "memory-root", path: ".", pattern: "MEMORY.md" },
+        { name: "knowledge", path: "memory/knowledge", pattern: "**/*.md" },
+        { name: "task-memory", path: "memory", pattern: "task_memory.md" }
+      ]
+    }
+  }
+}

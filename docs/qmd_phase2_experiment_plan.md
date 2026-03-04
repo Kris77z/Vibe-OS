@@ -57,6 +57,14 @@
   [openclaw.vibe-os.instance.qmd-mission-log-overlay.example.json5](/Users/jungle/Desktop/dev/vibe-os/docs/openclaw.vibe-os.instance.qmd-mission-log-overlay.example.json5)
 - mission log runbook：
   [qmd_phase42_mission_log_experiment_runbook.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_phase42_mission_log_experiment_runbook.md)
+- task memory distillation script：
+  [distill_mission_log_to_task_memory.mjs](/Users/jungle/Desktop/dev/vibe-os/scripts/distill_mission_log_to_task_memory.mjs)
+- task memory one-command eval script：
+  [qmd_run_task_memory_eval.sh](/Users/jungle/Desktop/dev/vibe-os/scripts/qmd_run_task_memory_eval.sh)
+- task memory overlay：
+  [openclaw.vibe-os.instance.qmd-task-memory-overlay.example.json5](/Users/jungle/Desktop/dev/vibe-os/docs/openclaw.vibe-os.instance.qmd-task-memory-overlay.example.json5)
+- task memory runbook：
+  [qmd_phase43_task_memory_distillation_runbook.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_phase43_task_memory_distillation_runbook.md)
 - daily memory overlay：
   [openclaw.vibe-os.instance.qmd-daily-memory-overlay.example.json5](/Users/jungle/Desktop/dev/vibe-os/docs/openclaw.vibe-os.instance.qmd-daily-memory-overlay.example.json5)
 
@@ -262,6 +270,12 @@ scripts/qmd_run_eval.sh \
 - live 默认继续保持 `search`，不切 `query`
 - `mission_log` 白名单在 `search` 模式下继续保留观察
 - 下一步优先做 `mission_log` 切片/去噪，再评估是否长期固化
+
+下一轮执行入口（Phase 4.3）：
+
+- 先用 [distill_mission_log_to_task_memory.mjs](/Users/jungle/Desktop/dev/vibe-os/scripts/distill_mission_log_to_task_memory.mjs) 生成 `memory/task_memory.md`
+- 用 [openclaw.vibe-os.instance.qmd-task-memory-overlay.example.json5](/Users/jungle/Desktop/dev/vibe-os/docs/openclaw.vibe-os.instance.qmd-task-memory-overlay.example.json5) 替换 `mission_log` 直索引
+- 按 [qmd_phase43_task_memory_distillation_runbook.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_phase43_task_memory_distillation_runbook.md) 跑对比评测
 
 推荐下一轮方向：
 

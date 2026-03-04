@@ -205,3 +205,7 @@ scripts/qmd_run_eval.sh \
 本轮验收判断：
 
 - 在 search 模式下，`mission_log` 候选结果偏正面，可继续保留观察
+
+下一步：
+
+- 进入 [qmd_phase43_task_memory_distillation_runbook.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_phase43_task_memory_distillation_runbook.md)，验证 `mission_log` 切片后的低噪声替代方案

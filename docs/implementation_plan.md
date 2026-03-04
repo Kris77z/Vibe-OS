@@ -146,6 +146,7 @@
 - [qmd_live_validation_findings_2026-03-03.md](/Users/jungle/Desktop/dev/vibe-os/docs/archive/2026-03/qmd_live_validation_findings_2026-03-03.md)
 - [qmd_phase2_experiment_plan.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_phase2_experiment_plan.md)
 - [qmd_phase42_mission_log_experiment_runbook.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_phase42_mission_log_experiment_runbook.md)
+- [qmd_phase43_task_memory_distillation_runbook.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_phase43_task_memory_distillation_runbook.md)
 
 对应代码 / 脚本：
 
@@ -154,13 +155,17 @@
 - [qmd_run_eval.sh](/Users/jungle/Desktop/dev/vibe-os/scripts/qmd_run_eval.sh)
 - [qmd_eval_matrix.mjs](/Users/jungle/Desktop/dev/vibe-os/scripts/qmd_eval_matrix.mjs)
 - [qmd_compare_eval_reports.mjs](/Users/jungle/Desktop/dev/vibe-os/scripts/qmd_compare_eval_reports.mjs)
+- [distill_mission_log_to_task_memory.mjs](/Users/jungle/Desktop/dev/vibe-os/scripts/distill_mission_log_to_task_memory.mjs)
+- [qmd_run_task_memory_eval.sh](/Users/jungle/Desktop/dev/vibe-os/scripts/qmd_run_task_memory_eval.sh)
 - [openclaw.vibe-os.instance.qmd-overlay.example.json5](/Users/jungle/Desktop/dev/vibe-os/docs/openclaw.vibe-os.instance.qmd-overlay.example.json5)
+- [openclaw.vibe-os.instance.qmd-task-memory-overlay.example.json5](/Users/jungle/Desktop/dev/vibe-os/docs/openclaw.vibe-os.instance.qmd-task-memory-overlay.example.json5)
 
 当前判断：
 
 - QMD enablement 基线已完成
 - `query` 不适合当前默认交互路径
 - `search` 模式下可继续保留 `mission_log` 白名单观察
+- 下一步进入 Phase 4.3：先做 `mission_log -> task_memory.md` 文件级切片实验，再决定是否替换 `mission_log` 直索引
 - 后续不再继续扩自定义 retrieval 架构，主线改为把 digestion 输出收敛到 OpenClaw 官方 memory 层
 
 #### E. OpenClaw 官方 Memory 层收敛

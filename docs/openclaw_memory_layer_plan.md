@@ -45,9 +45,14 @@
 
 暂不继续推进：
 
-- `task-memory` 自定义导出层
+- 新的检索存储中间层或服务化 `task-memory` 架构
 - `mission_log` 特殊权重控制
 - 超出 OpenClaw 官方配置面的 QMD 调参
+
+允许的最小实验面：
+
+- 仅做文件级蒸馏：`mission_log -> memory/task_memory.md`
+- 仍使用官方 `memory.qmd.paths` 接入，不新增检索基础设施
 
 保留的官方能力面只有：
 
@@ -182,6 +187,10 @@ digestion 下一阶段不再只围绕：
 - 保持 `searchMode = "search"`
 - 不继续折腾 `query`
 - 不把 `braindump.md` 纳入主索引
+
+并行可做的最小实验：
+
+- 按 [qmd_phase43_task_memory_distillation_runbook.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_phase43_task_memory_distillation_runbook.md) 验证 `mission_log -> task_memory.md` 的低噪声检索效果
 
 ### Step 4. 等 daily memory 稳定后再做最小验证
 
