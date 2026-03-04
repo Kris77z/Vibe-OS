@@ -147,6 +147,53 @@ scripts/qmd_run_eval.sh \
 - 部署机非交互 shell 可能缺少 Homebrew PATH；评测命令应显式注入 `--openclaw-bin /opt/homebrew/bin/openclaw`
 - 统一建议优先通过 `scripts/qmd_run_eval.sh` 执行评测，避免部署机环境漂移
 
+2026-03-04 一键脚本复验（部署机本机）：
+
+1. baseline（search）先通过一键脚本刷新：
+
+```bash
+scripts/qmd_run_eval.sh \
+  --label search-baseline \
+  --instance-root /Users/kris/instances/vibe-os \
+  --force-reindex
+```
+
+- 结果：`Indexed 6/8 files · 6 chunks`
+- baseline 报告成功更新：
+  - `.logs/qmd-eval/search-baseline.json`（2026-03-04 18:05）
+- 仍有 2 条 `No matches`：`减脂`、`run_remote_digestion.mjs`
+
+2. 切换 `memory.qmd.searchMode=query` 后执行：
+
+```bash
+scripts/qmd_run_eval.sh \
+  --label query-mode \
+  --instance-root /Users/kris/instances/vibe-os \
+  --base-report .logs/qmd-eval/search-baseline.json \
+  --compare-output .logs/qmd-eval/search-vs-query.md
+```
+
+- 运行超过 9 分钟仍未完成（`qmd_eval_matrix.mjs` 持续挂起），按超时中止
+- 本轮未生成新 `query-mode` 报告；旧文件时间戳仍停留在 2026-03-03：
+  - `.logs/qmd-eval/query-mode.json`
+  - `.logs/qmd-eval/search-vs-query.md`
+
+3. 限时 spot-check（8 条 query，单条 12s 超时保护）：
+
+- `AI Native`：`qmd query ... timed out after 4000ms`
+- `Crypto Markdown`：`qmd query ... timed out after 4000ms`
+- `Memory as File System`：`qmd query ... timed out after 4000ms`
+- `减脂`：`qmd query ... timed out after 4000ms`
+- `OpenClaw gateway`：`qmd query ... timed out after 4000ms`
+- `remote digestion`：`qmd query ... timed out after 4000ms`
+- `run_remote_digestion.mjs`：`qmd query ... timed out after 4000ms`
+- `验证 remote runner`：`qmd query ... timed out after 4000ms`
+
+结论：
+
+- 当前部署机口径下，`query` 模式仍不可用于 live 默认检索
+- 已将 `searchMode` 回滚为 `search`，并重启 `ai.openclaw.vibe-os` gateway
+
 ---
 
 ## 3. 实验二：Mission Log 纳入评估
