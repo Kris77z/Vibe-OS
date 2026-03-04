@@ -123,6 +123,7 @@ node scripts/qmd_eval_matrix.mjs \
   --label search-baseline \
   --profile vibe-os \
   --instance-root /Users/kris/instances/vibe-os \
+  --openclaw-bin /opt/homebrew/bin/openclaw \
   --format json \
   --output .logs/qmd-eval/search-baseline.json
 ```
@@ -134,6 +135,7 @@ node scripts/qmd_eval_matrix.mjs \
   --label query-mode \
   --profile vibe-os \
   --instance-root /Users/kris/instances/vibe-os \
+  --openclaw-bin /opt/homebrew/bin/openclaw \
   --format json \
   --output .logs/qmd-eval/query-mode.json
 ```
@@ -154,6 +156,7 @@ node scripts/qmd_compare_eval_reports.mjs \
 - 逐条 timed spot-check 中 8/8 query 触发 `qmd query ... timed out after 4000ms`
 - 当前阶段不建议把 live 默认模式切到 `query`
 - 后续所有 live eval 都应显式注入 `--profile` + `--instance-root`，避免误打到默认 `~/.openclaw`
+- 部署机非交互 shell 可能缺少 Homebrew PATH；评测命令应显式注入 `--openclaw-bin /opt/homebrew/bin/openclaw`
 
 ---
 
@@ -192,6 +195,7 @@ node scripts/qmd_eval_matrix.mjs \
   --label mission-log-candidate \
   --profile vibe-os \
   --instance-root /Users/kris/instances/vibe-os \
+  --openclaw-bin /opt/homebrew/bin/openclaw \
   --format json \
   --output .logs/qmd-eval/mission-log-candidate.json
 ```
@@ -213,6 +217,12 @@ node scripts/qmd_compare_eval_reports.mjs \
 - 暂未看到 `AI Native / OpenClaw gateway` 这类高价值 query 被明显污染
 - 结论偏正面，但还不足以下“必须永久纳入 live”的最终判断
 - 下一步优先做 `mission_log` 的切片/去噪实验，而不是直接接受“整文件永久纳入”
+
+2026-03-04 补充观察（部署机 spot-check）：
+
+- 修复非交互环境 `openclaw ENOENT` 后，search baseline 评测可稳定跑完
+- 与 2026-03-03 baseline 对比为 `Changed 6 / Same 2`，主要是分值波动，不是结构性召回退化
+- `remote digestion` query 里 `mission_log` 结果重新出现到前排，说明该源在任务线索召回上仍有价值
 
 推荐下一轮方向：
 

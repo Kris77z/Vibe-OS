@@ -136,6 +136,7 @@
 - 已补部署机依赖检查脚本、QMD 最小启动验证脚本、配置 overlay 示例
 - 已在部署机完成 live 切换，当前 `memory.backend = qmd`
 - 已补 live 验证结论，明确下一阶段主问题是中文召回与白名单扩展
+- 已补 `qmd_eval_matrix.mjs` 的 `openclaw` 可执行路径收敛（支持 `--openclaw-bin` 与 `/opt/homebrew/bin/openclaw` fallback），避免部署机非交互 PATH 导致 `spawnSync openclaw ENOENT`
 
 对应文档：
 

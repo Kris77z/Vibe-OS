@@ -25,6 +25,7 @@ function parseArgs(argv) {
     stateDir: "",
     configPath: "",
     instanceRoot: "",
+    openclawBin: "",
   };
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -66,6 +67,10 @@ function parseArgs(argv) {
         options.instanceRoot = next;
         index += 1;
         break;
+      case "openclaw-bin":
+        options.openclawBin = next;
+        index += 1;
+        break;
       case "output":
         options.output = next;
         index += 1;
@@ -91,6 +96,7 @@ function printHelp() {
   node scripts/qmd_eval_matrix.mjs [--label NAME] [--agent main] [--queries-file PATH] [--output PATH] [--format markdown|json]
                                 [--profile vibe-os] [--state-dir PATH] [--config-path PATH]
                                 [--instance-root /Users/.../instances/vibe-os]
+                                [--openclaw-bin /opt/homebrew/bin/openclaw]
 
 Purpose:
   Run a fixed QMD memory-search query set against the current OpenClaw config and save a comparable report.
@@ -136,11 +142,22 @@ function resolveRuntimeEnv(options) {
   return env;
 }
 
-function runOpenClaw(args, env) {
+function resolveOpenClawBin(options, env) {
+  const configured = String(options.openclawBin || env.OPENCLAW_BIN || "").trim();
+  if (configured) {
+    return configured;
+  }
+
+  const fallbackCandidates = ["/opt/homebrew/bin/openclaw", "/usr/local/bin/openclaw"];
+  const fallback = fallbackCandidates.find((candidate) => fs.existsSync(candidate));
+  return fallback || "openclaw";
+}
+
+function runOpenClaw(openclawBin, args, env) {
   try {
     return {
       ok: true,
-      output: execFileSync("openclaw", args, {
+      output: execFileSync(openclawBin, args, {
         cwd: repoRoot,
         encoding: "utf8",
         stdio: ["ignore", "pipe", "pipe"],
@@ -155,20 +172,21 @@ function runOpenClaw(args, env) {
   }
 }
 
-function runStatus(agent, env) {
-  return runOpenClaw(["memory", "status", "--agent", agent, "--deep"], env);
+function runStatus(agent, env, openclawBin) {
+  return runOpenClaw(openclawBin, ["memory", "status", "--agent", agent, "--deep"], env);
 }
 
-function runQuery(agent, query, env) {
-  return runOpenClaw(["memory", "search", "--agent", agent, "--query", query], env);
+function runQuery(agent, query, env, openclawBin) {
+  return runOpenClaw(openclawBin, ["memory", "search", "--agent", agent, "--query", query], env);
 }
 
 function buildReport(options, queries) {
   const runtimeEnv = resolveRuntimeEnv(options);
-  const status = runStatus(options.agent, runtimeEnv);
+  const openclawBin = resolveOpenClawBin(options, runtimeEnv);
+  const status = runStatus(options.agent, runtimeEnv, openclawBin);
   const results = queries.map((query) => ({
     query,
-    ...runQuery(options.agent, query, runtimeEnv),
+    ...runQuery(options.agent, query, runtimeEnv, openclawBin),
   }));
 
   return {
@@ -181,6 +199,7 @@ function buildReport(options, queries) {
       profile: runtimeEnv.OPENCLAW_PROFILE || null,
       stateDir: runtimeEnv.OPENCLAW_STATE_DIR || null,
       configPath: runtimeEnv.OPENCLAW_CONFIG_PATH || null,
+      openclawBin,
     },
     queriesFile: path.resolve(
       path.isAbsolute(options.queriesFile)
