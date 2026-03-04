@@ -270,15 +270,18 @@ node scripts/append_braindump_entry.mjs \
 
 验收结论：
 
-- **PASS**
+- **PASS（限定范围）**
+- 本次 PASS 仅覆盖“统一写入器本地链路”（`append_braindump_entry.mjs`）
+- 仍缺一轮“Raycast UI -> live workspace braindump.md”的端到端压测，完成后才算 dump 写盘链路完全收尾
 
 ## 当前结论
 
-这轮之后，可以确认两件事：
+这轮之后，可以确认三件事：
 
 1. digestion 主线已经从“只写 `mission_log + knowledge`”推进到“默认产出 daily memory”
-2. 下一步应该继续收口返回 contract，而不是回头继续折腾 QMD 检索参数
+2. 统一写入器本地链路已经稳定，能满足 append-only 的核心验收口径
+3. 但 live E2E（Raycast UI 真实写盘）还没完成，下一步应先补这一轮再继续收口 contract
 
 一句话：
 
-**daily memory 落盘已经通了，接下来该收的是结果协议，不是检索器。**
+**daily memory 落盘已通，统一写入器本地已稳；当前首要动作是补完 Raycast live E2E 写盘验收，再继续收口结果协议。**

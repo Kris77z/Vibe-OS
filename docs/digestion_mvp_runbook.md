@@ -378,7 +378,7 @@ live instance 真实结果：
 - 后续以控制器侧推进 `digestion_state.json` 为准，避免继续依赖 agent 写时间戳
 - 如果历史 braindump 记录没有以换行结束，新的条目可能会被拼进旧记录，导致增量检测失真
 - 当前 agent 侧虽然已能真实写 daily memory，但结构化返回 contract 仍需继续收口
-- dump 模式在特定轮次仍可能出现“覆盖成单条”行为，需要优先加防护
+- dump 写盘历史上出现过“覆盖成单条”回归；统一写入器本地压测已通过，但 Raycast live E2E 仍需完成
 
 ---
 
@@ -386,7 +386,7 @@ live instance 真实结果：
 
 这个 runbook 跑通后，下一手再做：
 
-1. 先修复 braindump 写入的覆盖风险，保证 append-only 稳定性
+1. 先做一轮 Raycast UI -> live `memory/braindump.md` 的端到端压测（20~50 条），确认无覆盖、无黏连、size 单调增长
 2. 继续观察 `task_result_v1` 校验是否连续多轮保持 `valid=true`
 3. 用 `launchd` 把 `scripts/run_remote_digestion.sh` 挂成稳定定时任务
 4. 连续观察几天真实产出的 `memory/YYYY-MM-DD.md`
