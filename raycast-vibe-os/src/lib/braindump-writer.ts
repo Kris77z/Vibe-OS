@@ -105,7 +105,19 @@ export async function appendBraindumpEntry(
   const contentB64 = Buffer.from(normalizedContent, "utf8").toString("base64");
   const remoteCommand = [
     "set -euo pipefail",
-    `node ${shellQuote(remoteAppendScriptPath)} \\`,
+    "if command -v node >/dev/null 2>&1; then",
+    '  RUNTIME="node"',
+    "elif command -v bun >/dev/null 2>&1; then",
+    '  RUNTIME="bun"',
+    "elif [ -x /opt/homebrew/bin/node ]; then",
+    '  RUNTIME="/opt/homebrew/bin/node"',
+    "elif [ -x /usr/local/bin/node ]; then",
+    '  RUNTIME="/usr/local/bin/node"',
+    "else",
+    '  echo "RUNTIME_NOT_FOUND: node/bun not found on remote host" >&2',
+    "  exit 127",
+    "fi",
+    `$RUNTIME ${shellQuote(remoteAppendScriptPath)} \\`,
     `  --file ${shellQuote(remoteBraindumpPath)} \\`,
     `  --content-b64 ${shellQuote(contentB64)}`,
   ].join("\n");
@@ -156,6 +168,7 @@ export function toDumpWriteError(error: unknown): string {
   if (message.includes("Permission denied")) return "SSH 鉴权失败，请检查 key 和远程权限。";
   if (message.includes("Connection timed out")) return "SSH 连接超时，请检查隧道或网络。";
   if (message.includes("Could not resolve hostname")) return "远程主机不可解析，请检查 SSH target。";
+  if (message.includes("RUNTIME_NOT_FOUND")) return "部署机缺少 node/bun 运行时，请先安装后重试。";
   if (message.includes("LOCK_BUSY")) return "倾倒正在并发写入，稍后重试。";
   if (message.includes("APPEND_FAILED")) return message.replace(/^APPEND_FAILED:\s*/, "");
 
