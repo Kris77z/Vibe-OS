@@ -151,6 +151,127 @@ live `braindump.md` 中有一条历史记录没有以换行结束，导致第一
 - 正向：`task_result_v1` 至少在这轮实测里已达到 machine-valid
 - 负向：braindump dump 模式仍存在“覆盖成单条”的高风险行为，优先级应高于 contract 优化
 
+## Dump Append Stress Test（2026-03-04）
+
+### 测试目标
+
+- 在最新代码（包含 commit `61027b5`）下，验证统一写入器 `append_braindump_entry.mjs` 的本地稳定性
+- 确认 Raycast dump 侧已切到统一写入器路径（只做配置与代码检查，不做 Raycast UI 交互）
+- 给出连续 dump 压测数据、`wc -c` 每轮变化、首尾 tail 样本与验收结论
+
+### 本地冒烟
+
+测试文件：
+
+- `/tmp/vibe-os-dump-stress/braindump.md`
+
+初始状态（人为制造“末尾无换行”）：
+
+- `wc -c = 43`
+- 内容：`[seed] legacy line without trailing newline`（无末尾换行）
+
+冒烟命令：
+
+```bash
+node scripts/append_braindump_entry.mjs \
+  --file /tmp/vibe-os-dump-stress/braindump.md \
+  --content 'smoke test: unified writer local append'
+```
+
+冒烟结果：
+
+- 返回 `status: ok`
+- `beforeBytes: 43`
+- `afterBytes: 107`
+- 文件最终按行表现正常，说明“末尾补换行再追加”逻辑生效
+
+### Raycast dump 配置检查（只检查）
+
+已确认：
+
+- `raycast-vibe-os/src/dump-to-vibe-os.tsx` 已调用 `appendBraindumpEntry(...)`
+- `raycast-vibe-os/src/lib/braindump-writer.ts` 已通过 SSH 执行统一脚本：
+  - `${remoteWorkspaceRoot}/scripts/append_braindump_entry.mjs`
+- `raycast-vibe-os/package.json` 已暴露 dump 专用配置项：
+  - `dumpSshTarget`
+  - `dumpSshKeyPath`
+  - `dumpRemoteWorkspaceRoot`
+  - `dumpSshConnectTimeoutSec`
+
+### 连续 dump 压测（20 轮）
+
+压测输入：
+
+- 每轮内容模板：`stress round XX: append discipline and size monotonic check`
+- 总轮次：20
+
+验收标准：
+
+1. 每轮 `afterBytes > beforeBytes`
+2. 每轮 `wc -c` 与写入器返回 `afterBytes` 一致
+3. 新条目独立成行，不黏连上一行
+4. 全轮次无报错
+
+汇总结果：
+
+- `allDeltaPositive = true`
+- `allWcMatchAfter = true`
+- `min_delta = 83`
+- `max_delta = 83`
+- 总增量：`1660 bytes`
+
+每轮数据（`wc -c` 变化）：
+
+| round | before | after | delta | wc_after | wc_match |
+| --- | ---: | ---: | ---: | ---: | :--- |
+| 1 | 107 | 190 | 83 | 190 | true |
+| 2 | 190 | 273 | 83 | 273 | true |
+| 3 | 273 | 356 | 83 | 356 | true |
+| 4 | 356 | 439 | 83 | 439 | true |
+| 5 | 439 | 522 | 83 | 522 | true |
+| 6 | 522 | 605 | 83 | 605 | true |
+| 7 | 605 | 688 | 83 | 688 | true |
+| 8 | 688 | 771 | 83 | 771 | true |
+| 9 | 771 | 854 | 83 | 854 | true |
+| 10 | 854 | 937 | 83 | 937 | true |
+| 11 | 937 | 1020 | 83 | 1020 | true |
+| 12 | 1020 | 1103 | 83 | 1103 | true |
+| 13 | 1103 | 1186 | 83 | 1186 | true |
+| 14 | 1186 | 1269 | 83 | 1269 | true |
+| 15 | 1269 | 1352 | 83 | 1352 | true |
+| 16 | 1352 | 1435 | 83 | 1435 | true |
+| 17 | 1435 | 1518 | 83 | 1518 | true |
+| 18 | 1518 | 1601 | 83 | 1601 | true |
+| 19 | 1601 | 1684 | 83 | 1684 | true |
+| 20 | 1684 | 1767 | 83 | 1767 | true |
+
+首尾两段 tail 输出：
+
+首段（轮次 1 后）：
+
+```text
+[seed] legacy line without trailing newline
+[2026-03-04T03:48:41Z] smoke test: unified writer local append
+[2026-03-04T03:49:13Z] stress round 01: append discipline and size monotonic check
+```
+
+尾段（轮次 20 后）：
+
+```text
+[2026-03-04T03:49:14Z] stress round 13: append discipline and size monotonic check
+[2026-03-04T03:49:14Z] stress round 14: append discipline and size monotonic check
+[2026-03-04T03:49:14Z] stress round 15: append discipline and size monotonic check
+[2026-03-04T03:49:14Z] stress round 16: append discipline and size monotonic check
+[2026-03-04T03:49:14Z] stress round 17: append discipline and size monotonic check
+[2026-03-04T03:49:14Z] stress round 18: append discipline and size monotonic check
+[2026-03-04T03:49:14Z] stress round 19: append discipline and size monotonic check
+[2026-03-04T03:49:14Z] stress round 20: append discipline and size monotonic check
+```
+
+验收结论：
+
+- **PASS**
+
 ## 当前结论
 
 这轮之后，可以确认两件事：

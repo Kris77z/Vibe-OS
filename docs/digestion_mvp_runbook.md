@@ -35,6 +35,9 @@
 - 2026-03-03 已补 controller wrapper 失败告警与 cooldown 抑制
 - 2026-03-03 已补 controller env 配置入口，支持 webhook / Telegram 外部告警
 - controller 当前会对 agent 返回的 `task_result_v1` 做本地结构校验，并在输出中附带 `contractValidation`
+- 2026-03-04 已确认仓库包含统一写入器 `scripts/append_braindump_entry.mjs`（commit `61027b5`）
+- 2026-03-04 已完成统一写入器本地 smoke + 20 轮 dump append 压测，验收结果 `PASS`
+- 2026-03-04 已完成 Raycast dump 配置检查：dump 命令已切换到统一写入器路径
 
 ---
 
@@ -342,6 +345,26 @@ live instance 真实结果：
 
 - contract 收口出现正向进展（至少本轮 machine-valid）
 - 但 braindump 写入稳定性问题优先级更高，应先确保绝对 append-only 行为
+
+### 2026-03-04 第六轮：统一写入器本地冒烟与 dump append 压测
+
+执行范围：
+
+- 确认最新代码包含 `61027b5`
+- 统一写入器本地冒烟（末尾无换行场景）
+- 连续 20 轮 append 压测（`wc -c` 每轮对账）
+- Raycast dump 配置只读检查（不做 UI 操作）
+
+结果：
+
+- 冒烟通过：`beforeBytes 43 -> afterBytes 107`
+- 压测通过：20/20 轮 `delta > 0`，且每轮 `wc -c == afterBytes`
+- 压测首尾 tail 均显示条目按行追加，未出现新黏连
+- Raycast dump 已切到统一写入器（`dump-to-vibe-os.tsx -> braindump-writer.ts -> append_braindump_entry.mjs`）
+
+结论：
+
+- 统一写入器本地稳定性满足当前验收标准
 
 ---
 
