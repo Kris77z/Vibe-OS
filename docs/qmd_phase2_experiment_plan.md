@@ -291,6 +291,27 @@ scripts/qmd_run_eval.sh \
 - 防回归 query（`AI Native` / `Crypto Markdown` / `Memory as File System` / `OpenClaw gateway`）未见污染
 - 决策：live 继续维持 `search + mission_log`；task-memory 作为下一轮切片规则优化方向
 
+2026-03-04 Phase 4.3 第二轮（anchors 版本）结果（见 [qmd_phase43_task_memory_distillation_runbook.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_phase43_task_memory_distillation_runbook.md#L193)）：
+
+- `mission-log-candidate` vs `task-memory-candidate-v2`：
+  - `Improved 0 / Regressed 0 / Changed 6 / Same 2`
+- 与首轮相比，任务 query 命中强度提升：
+  - `remote digestion`：`0.230 -> 0.320`（仍低于 mission-log 的 `0.480`）
+  - `验证 remote runner`：`0.530 -> 0.670`（仍低于 mission-log 的 `0.760`）
+- `run_remote_digestion.mjs` 仍 `No matches`
+- 结论不变：task-memory 暂不替换 live mission_log 直索引，继续优化切片规则
+
+2026-03-04 Phase 4.3 第三轮（anchors v3 精简）结果（见 [qmd_phase43_task_memory_distillation_runbook.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_phase43_task_memory_distillation_runbook.md#L247)）：
+
+- `mission-log-candidate` vs `task-memory-candidate-v3`：
+  - `Improved 0 / Regressed 0 / Changed 6 / Same 2`
+- 任务 query 变化：
+  - `remote digestion`：`0.320 -> 0.330`（v2 到 v3 小幅提升）
+  - `验证 remote runner`：`0.670 -> 0.670`（持平）
+  - 二者仍低于 mission-log 基线（`0.480` / `0.760`）
+- `run_remote_digestion.mjs` 仍 `No matches`
+- 阶段判断：task-memory 迭代已接近上限但未过线，live 继续保持 `search + mission_log`
+
 推荐下一轮方向：
 
 1. 从 `mission_log` 导出更高密度的 task-memory 子集，而不是整文件直灌

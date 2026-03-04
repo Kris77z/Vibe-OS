@@ -172,58 +172,75 @@ function uniq(items) {
   return Array.from(new Set(items.filter(Boolean)));
 }
 
-function splitWordLikeToken(token) {
-  return String(token || "")
-    .split(/[_./-]+/)
-    .map((part) => part.trim().toLowerCase())
-    .filter((part) => part.length >= 3);
-}
-
 function extractTaskAnchors(taskText) {
   const text = String(taskText || "");
   const lower = text.toLowerCase();
-  const anchors = [];
-
-  const rawTokens = lower.match(/[a-z0-9][a-z0-9_.-]{2,}/g) || [];
-  for (const token of rawTokens) {
-    anchors.push(token);
-    anchors.push(...splitWordLikeToken(token));
-  }
+  const anchors = new Set();
+  const push = (value) => {
+    const normalized = String(value || "").trim();
+    if (!normalized || normalized.length < 2) return;
+    anchors.add(normalized);
+  };
 
   if (lower.includes("remote") && lower.includes("digestion")) {
-    anchors.push("remote digestion");
+    push("remote digestion");
+    push("remote-digestion");
   }
   if (lower.includes("remote") && lower.includes("runner")) {
-    anchors.push("remote runner");
+    push("remote runner");
+    push("remote-runner");
   }
   if (lower.includes("run_remote_digestion")) {
-    anchors.push("run_remote_digestion.mjs");
-    anchors.push("remote digestion");
-    anchors.push("remote runner");
+    push("run_remote_digestion.mjs");
+    push("run_remote_digestion");
+    push("run remote digestion");
+    push("remote digestion");
+    push("remote runner");
   }
   if (lower.includes("openclaw")) {
-    anchors.push("openclaw");
+    push("openclaw");
+    push("openclaw cron");
   }
   if (lower.includes("cron")) {
-    anchors.push("cron");
+    push("cron");
   }
   if (text.includes("验证") && lower.includes("runner")) {
-    anchors.push("验证 remote runner");
+    push("验证 remote runner");
   }
   if (text.includes("远程")) {
-    anchors.push("远程");
-    anchors.push("remote");
+    push("远程消化");
+    push("远程 runner");
   }
   if (text.includes("消化") || lower.includes("digestion")) {
-    anchors.push("消化");
-    anchors.push("digestion");
+    push("消化");
+    push("digestion");
   }
 
-  return uniq(
-    anchors
-      .map((item) => String(item || "").trim())
-      .filter((item) => item.length >= 2),
-  );
+  const ordered = [
+    "验证 remote runner",
+    "remote runner",
+    "remote-runner",
+    "remote digestion",
+    "remote-digestion",
+    "run_remote_digestion.mjs",
+    "run_remote_digestion",
+    "run remote digestion",
+    "openclaw cron",
+    "openclaw",
+    "cron",
+    "远程消化",
+    "远程 runner",
+    "digestion",
+    "消化",
+  ];
+
+  const prioritized = ordered.filter((item) => anchors.has(item));
+  if (prioritized.length > 0) {
+    return prioritized.slice(0, 8);
+  }
+
+  const fallback = lower.match(/[a-z0-9][a-z0-9_.-]{2,}/g) || [];
+  return uniq(fallback).slice(0, 8);
 }
 
 function buildGlobalAnchors(openItems, completedItems, includeCompleted) {
@@ -282,7 +299,7 @@ function renderTaskMemory({
       if (includeEntryAnchors) {
         const anchors = extractTaskAnchors(item.text);
         if (anchors.length > 0) {
-          lines.push(`  - anchors: ${anchors.join(" | ")}`);
+          lines.push(`  - query_keys: ${anchors.join(" | ")}`);
         }
       }
     }
@@ -300,7 +317,7 @@ function renderTaskMemory({
         if (includeEntryAnchors) {
           const anchors = extractTaskAnchors(item.text);
           if (anchors.length > 0) {
-            lines.push(`  - anchors: ${anchors.join(" | ")}`);
+            lines.push(`  - query_keys: ${anchors.join(" | ")}`);
           }
         }
       }

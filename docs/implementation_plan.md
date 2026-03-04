@@ -140,6 +140,8 @@
 - 2026-03-04 已完成 `search-only` 口径下的 `mission_log` 候选对比：`Changed 2 / Regressed 0`，当前判断可在 `search` 模式继续保留 `mission_log` 白名单观察
 - 2026-03-04 已完成 Phase 4.3 首轮 task-memory 切片评测：任务 query 可命中，但相对 `mission_log` 候选强度偏弱，当前不替换 live `mission_log` 直索引
 - 已进入 Phase 4.3 第二轮：优化 task-memory 蒸馏规则（紧凑输出 + query anchors）后复验
+- 2026-03-04 Phase 4.3 第二轮复验已完成：任务 query 相比首轮有提升，但仍弱于 `mission_log` 候选，live 继续保持 `search + mission_log`
+- 2026-03-04 Phase 4.3 第三轮复验已完成：anchors v3 仅小幅提升，仍未超过 `mission_log` 候选，当前阶段继续维持 `search + mission_log`
 
 对应文档：
 
@@ -168,6 +170,7 @@
 - `query` 不适合当前默认交互路径
 - `search` 模式下可继续保留 `mission_log` 白名单观察
 - Phase 4.3 首轮实验已完成：`task_memory` 暂未达到替换 `mission_log` 的通过标准，后续继续优化切片规则后再复验
+- Phase 4.3 三轮复验后结论稳定：`task_memory` 方向可保留，但当前不替换 live `mission_log` 直索引
 - 后续不再继续扩自定义 retrieval 架构，主线改为把 digestion 输出收敛到 OpenClaw 官方 memory 层
 
 #### E. OpenClaw 官方 Memory 层收敛

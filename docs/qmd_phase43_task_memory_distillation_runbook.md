@@ -186,3 +186,110 @@ scripts/qmd_run_task_memory_eval.sh \
 - 蒸馏文件改为更紧凑结构，减少模板噪音
 - 为每条任务自动附加 query anchors（例如 `remote digestion`、`remote runner`、`run_remote_digestion.mjs`）
 - 复验命令保持不变，继续使用 `scripts/qmd_run_task_memory_eval.sh`
+
+---
+
+## 7. 2026-03-04 第二轮实测结果（anchors 版本）
+
+执行命令：
+
+```bash
+scripts/qmd_run_task_memory_eval.sh \
+  --instance-root /Users/kris/instances/vibe-os \
+  --label task-memory-candidate-v2 \
+  --base-report .logs/qmd-eval/search-baseline-no-mission-log.json \
+  --compare-output .logs/qmd-eval/search-vs-task-memory-v2.md \
+  --force-reindex
+```
+
+说明：
+
+- 第二轮使用更新后的 distill 脚本（默认 `includeEntryAnchors=true`）
+- `task_memory.md` 结构已变为紧凑版，包含 `Open Tasks` 与 `Search Anchors`
+
+产物：
+
+- `.logs/qmd-eval/task-memory-candidate-v2.json`
+- `.logs/qmd-eval/search-vs-task-memory-v2.md`
+- `.logs/qmd-eval/mission-log-vs-task-memory-v2.md`
+
+结果摘要：
+
+- `search-baseline-no-mission-log` vs `task-memory-candidate-v2`：
+  - `Improved 0 / Regressed 0 / Changed 6 / Same 2`
+- `mission-log-candidate` vs `task-memory-candidate-v2`：
+  - `Improved 0 / Regressed 0 / Changed 6 / Same 2`
+- `openclaw memory status --agent main --deep`：
+  - `Indexed: 7/9 files · 7 chunks`
+
+重点 query（mission-log vs task-memory-v2）：
+
+- `remote digestion`：
+  - mission-log：`0.480 memory/mission-log.md`
+  - task-memory-v1：`0.230 memory/task-memory.md`
+  - task-memory-v2：`0.320 memory/task-memory.md`
+- `验证 remote runner`：
+  - mission-log：`0.760 memory/mission-log.md`
+  - task-memory-v1：`0.530 memory/task-memory.md`
+  - task-memory-v2：`0.670 memory/task-memory.md`
+- `run_remote_digestion.mjs`：
+  - mission-log / task-memory-v1 / task-memory-v2 均 `No matches`
+
+结论：
+
+- anchors 版本相对首轮有改善（任务 query 首命中分值上升）
+- 但仍未达到“任务 query 不弱于 mission-log-candidate”的通过标准
+- live 继续保持 `search + mission_log`，task-memory 进入下一轮规则优化
+
+---
+
+## 8. 2026-03-04 第三轮实测结果（anchors v3 精简）
+
+第三轮改动：
+
+- distill 脚本进一步收敛 query keys：
+  - 去掉低信号碎词（如 `todo`、`run`、`mjs` 单词级噪音）
+  - 保留高信号短语（如 `验证 remote runner`、`remote digestion`、`run_remote_digestion.mjs`）
+  - 每条任务默认最多保留 8 个 query keys
+
+执行命令：
+
+```bash
+scripts/qmd_run_task_memory_eval.sh \
+  --instance-root /Users/kris/instances/vibe-os \
+  --label task-memory-candidate-v3 \
+  --base-report .logs/qmd-eval/search-baseline-no-mission-log.json \
+  --compare-output .logs/qmd-eval/search-vs-task-memory-v3.md \
+  --force-reindex
+```
+
+产物：
+
+- `.logs/qmd-eval/task-memory-candidate-v3.json`
+- `.logs/qmd-eval/search-vs-task-memory-v3.md`
+- `.logs/qmd-eval/mission-log-vs-task-memory-v3.md`
+
+结果摘要：
+
+- `search-baseline-no-mission-log` vs `task-memory-candidate-v3`：
+  - `Improved 0 / Regressed 0 / Changed 6 / Same 2`
+- `mission-log-candidate` vs `task-memory-candidate-v3`：
+  - `Improved 0 / Regressed 0 / Changed 6 / Same 2`
+
+重点 query（mission-log vs task-memory-v2 vs task-memory-v3）：
+
+- `remote digestion`：
+  - mission-log：`0.480 memory/mission-log.md`
+  - task-memory-v2：`0.320 memory/task-memory.md`
+  - task-memory-v3：`0.330 memory/task-memory.md`
+- `验证 remote runner`：
+  - mission-log：`0.760 memory/mission-log.md`
+  - task-memory-v2：`0.670 memory/task-memory.md`
+  - task-memory-v3：`0.670 memory/task-memory.md`
+- `run_remote_digestion.mjs`：
+  - mission-log / task-memory-v2 / task-memory-v3 均 `No matches`
+
+结论：
+
+- v3 相比 v2 仅小幅提升（`remote digestion 0.320 -> 0.330`），总体仍弱于 `mission-log-candidate`
+- 当前阶段判定为“已接近上限但未过线”，继续保持 live `search + mission_log`
