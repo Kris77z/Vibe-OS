@@ -131,6 +131,188 @@ function shellQuote(value) {
   return `'${String(value).replace(/'/g, `'\\''`)}'`;
 }
 
+function isPlainObject(value) {
+  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+}
+
+function validateEnum(value, allowed) {
+  return allowed.includes(value);
+}
+
+function validateTaskResultV1(result) {
+  const errors = [];
+  const rootAllowedKeys = new Set([
+    "status",
+    "summary",
+    "artifacts",
+    "actions",
+    "memoryWrites",
+    "nextActions",
+    "errors",
+  ]);
+
+  if (!isPlainObject(result)) {
+    return {
+      valid: false,
+      errors: ["Result must be a JSON object."],
+    };
+  }
+
+  for (const key of Object.keys(result)) {
+    if (!rootAllowedKeys.has(key)) {
+      errors.push(`Unexpected root field: ${key}`);
+    }
+  }
+
+  if (!validateEnum(result.status, ["ok", "partial", "error"])) {
+    errors.push("status must be one of: ok, partial, error");
+  }
+
+  if (typeof result.summary !== "string" || !result.summary.trim()) {
+    errors.push("summary must be a non-empty string");
+  }
+
+  if (!Array.isArray(result.artifacts)) {
+    errors.push("artifacts must be an array");
+  } else {
+    const artifactAllowedKeys = new Set(["type", "path", "description"]);
+    for (const [index, item] of result.artifacts.entries()) {
+      if (!isPlainObject(item)) {
+        errors.push(`artifacts[${index}] must be an object`);
+        continue;
+      }
+      for (const key of Object.keys(item)) {
+        if (!artifactAllowedKeys.has(key)) {
+          errors.push(`artifacts[${index}] has unexpected field: ${key}`);
+        }
+      }
+      if (!validateEnum(item.type, ["file_update", "file_create", "file_delete", "report", "command_result"])) {
+        errors.push(`artifacts[${index}].type is invalid`);
+      }
+      if (item.path !== undefined && typeof item.path !== "string") {
+        errors.push(`artifacts[${index}].path must be a string`);
+      }
+      if (item.description !== undefined && typeof item.description !== "string") {
+        errors.push(`artifacts[${index}].description must be a string`);
+      }
+    }
+  }
+
+  if (!Array.isArray(result.actions)) {
+    errors.push("actions must be an array");
+  } else {
+    const actionAllowedKeys = new Set(["type", "target", "count", "description"]);
+    for (const [index, item] of result.actions.entries()) {
+      if (!isPlainObject(item)) {
+        errors.push(`actions[${index}] must be an object`);
+        continue;
+      }
+      for (const key of Object.keys(item)) {
+        if (!actionAllowedKeys.has(key)) {
+          errors.push(`actions[${index}] has unexpected field: ${key}`);
+        }
+      }
+      if (!validateEnum(item.type, ["append", "update", "create", "delete", "notify", "noop"])) {
+        errors.push(`actions[${index}].type is invalid`);
+      }
+      if (item.target !== undefined && typeof item.target !== "string") {
+        errors.push(`actions[${index}].target must be a string`);
+      }
+      if (
+        item.count !== undefined &&
+        (!Number.isInteger(item.count) || item.count < 0)
+      ) {
+        errors.push(`actions[${index}].count must be a non-negative integer`);
+      }
+      if (item.description !== undefined && typeof item.description !== "string") {
+        errors.push(`actions[${index}].description must be a string`);
+      }
+    }
+  }
+
+  if (!Array.isArray(result.memoryWrites)) {
+    errors.push("memoryWrites must be an array");
+  } else {
+    const memoryWriteAllowedKeys = new Set(["target", "reason"]);
+    for (const [index, item] of result.memoryWrites.entries()) {
+      if (!isPlainObject(item)) {
+        errors.push(`memoryWrites[${index}] must be an object`);
+        continue;
+      }
+      for (const key of Object.keys(item)) {
+        if (!memoryWriteAllowedKeys.has(key)) {
+          errors.push(`memoryWrites[${index}] has unexpected field: ${key}`);
+        }
+      }
+      if (typeof item.target !== "string" || !item.target.trim()) {
+        errors.push(`memoryWrites[${index}].target must be a non-empty string`);
+      }
+      if (!validateEnum(item.reason, ["long_term_knowledge", "task_update", "session_summary", "other"])) {
+        errors.push(`memoryWrites[${index}].reason is invalid`);
+      }
+    }
+  }
+
+  if (result.nextActions !== undefined) {
+    if (!Array.isArray(result.nextActions)) {
+      errors.push("nextActions must be an array when present");
+    } else {
+      for (const [index, item] of result.nextActions.entries()) {
+        if (typeof item !== "string" || !item.trim()) {
+          errors.push(`nextActions[${index}] must be a non-empty string`);
+        }
+      }
+    }
+  }
+
+  if (!Array.isArray(result.errors)) {
+    errors.push("errors must be an array");
+  } else {
+    const errorAllowedKeys = new Set(["code", "message", "retryable"]);
+    for (const [index, item] of result.errors.entries()) {
+      if (!isPlainObject(item)) {
+        errors.push(`errors[${index}] must be an object`);
+        continue;
+      }
+      for (const key of Object.keys(item)) {
+        if (!errorAllowedKeys.has(key)) {
+          errors.push(`errors[${index}] has unexpected field: ${key}`);
+        }
+      }
+      if (typeof item.code !== "string" || !item.code.trim()) {
+        errors.push(`errors[${index}].code must be a non-empty string`);
+      }
+      if (typeof item.message !== "string" || !item.message.trim()) {
+        errors.push(`errors[${index}].message must be a non-empty string`);
+      }
+      if (item.retryable !== undefined && typeof item.retryable !== "boolean") {
+        errors.push(`errors[${index}].retryable must be a boolean`);
+      }
+    }
+  }
+
+  return {
+    valid: errors.length === 0,
+    errors,
+  };
+}
+
+function extractOutputText(responseEnvelope) {
+  const outputs = Array.isArray(responseEnvelope?.output) ? responseEnvelope.output : [];
+  const parts = [];
+
+  for (const item of outputs) {
+    const content = Array.isArray(item?.content) ? item.content : [];
+    for (const block of content) {
+      if (block?.type === "output_text" && typeof block.text === "string") {
+        parts.push(block.text);
+      }
+    }
+  }
+
+  return parts.join("").trim();
+}
+
 function createTempWorkspace() {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "vibe-os-digestion-"));
   const memoryDir = path.join(root, "memory");
@@ -239,9 +421,7 @@ function main() {
   ]);
   const responseRaw = callRemoteGateway(config, buildRemoteRequest(prompt));
   const responseEnvelope = JSON.parse(responseRaw);
-  const outputText =
-    responseEnvelope?.output?.[0]?.content?.find?.((item) => item?.type === "output_text")
-      ?.text ?? "";
+  const outputText = extractOutputText(responseEnvelope);
 
   let digestionResult;
   try {
@@ -249,6 +429,8 @@ function main() {
   } catch (error) {
     fail(`Failed to parse digestion result JSON: ${String(error)}\nRaw output: ${outputText}`);
   }
+
+  const contractValidation = validateTaskResultV1(digestionResult);
 
   if (digestionResult.status === "ok") {
     const endLine = prepareResult?.context?.endLine;
@@ -262,6 +444,13 @@ function main() {
     };
     writeRemoteState(config, nextState);
     digestionResult.controllerState = nextState;
+  }
+
+  digestionResult.contractValidation = contractValidation;
+  if (!contractValidation.valid) {
+    digestionResult.controllerWarnings = [
+      `task_result_v1 validation failed with ${contractValidation.errors.length} issue(s)`,
+    ];
   }
 
   digestionResult.prepare = {

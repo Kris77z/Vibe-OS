@@ -285,6 +285,37 @@ function renderPrompt(payloadFilePath) {
     dailyMemoryTargets.length > 0
       ? dailyMemoryTargets.map((item) => `- ${item.path}`).join("\n")
       : "- memory/<YYYY-MM-DD>.md";
+  const resultTemplate = JSON.stringify(
+    {
+      status: "ok",
+      summary: "一句话总结这轮 digestion 做了什么。",
+      artifacts: [
+        {
+          type: "file_update",
+          path: "memory/2026-03-03.md",
+          description: "写入 daily memory",
+        },
+      ],
+      actions: [
+        {
+          type: "append",
+          target: "memory/2026-03-03.md",
+          count: 1,
+          description: "追加本轮 daily memory",
+        },
+      ],
+      memoryWrites: [
+        {
+          target: "memory/2026-03-03.md",
+          reason: "session_summary",
+        },
+      ],
+      nextActions: [],
+      errors: [],
+    },
+    null,
+    2,
+  );
 
   return [
     "你现在执行一次 Vibe-OS digestion 任务。",
@@ -306,6 +337,9 @@ function renderPrompt(payloadFilePath) {
     "10. 完成后只输出一个严格符合 task_result_v1 的 JSON，不要输出额外解释文字。",
     "11. task_result_v1 里：artifacts 必须是数组，actions 必须是数组，memoryWrites 必须是数组；不要自造对象形状。",
     "12. artifact.type 只能用 file_update / file_create / file_delete / report / command_result；action.type 只能用 append / update / create / delete / notify / noop；memoryWrites[].reason 只能用 long_term_knowledge / task_update / session_summary / other。",
+    "13. 结果 JSON 的字段名必须固定为：status、summary、artifacts、actions、memoryWrites、nextActions、errors。",
+    "14. 参考这个最小合法模板；如果某类没有内容，也必须返回空数组：",
+    resultTemplate,
     "",
     "本次新增 braindump 原文如下：",
     excerpt,

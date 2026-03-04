@@ -57,6 +57,8 @@ function buildInstructions(
         "Append it verbatim to memory/braindump.md in the workspace.",
         "Do not rewrite, summarize, or delete existing content.",
         "Keep memory/braindump.md append-only.",
+        "If the file does not end with a newline, add one before appending the new entry.",
+        "Ensure the new brain-dump entry starts on its own line with a precise timestamp.",
         "After the append succeeds, reply with one short Chinese confirmation sentence no longer than 15 characters.",
         "Do not ask follow-up questions.",
       ].join(" ");

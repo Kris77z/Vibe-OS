@@ -146,6 +146,7 @@
 - append-only
 - 不重写
 - 不作为 digestion 的输出目标
+- 追加新 entry 时，如果文件末尾不是换行，先补换行，再写入新的时间戳记录
 
 ### 3.2 `memory/YYYY-MM-DD.md`
 

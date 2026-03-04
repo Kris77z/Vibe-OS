@@ -34,6 +34,7 @@
 - 2026-03-03 已补控制器侧运行状态文件与 `check_remote_digestion_status.mjs`
 - 2026-03-03 已补 controller wrapper 失败告警与 cooldown 抑制
 - 2026-03-03 已补 controller env 配置入口，支持 webhook / Telegram 外部告警
+- controller 当前会对 agent 返回的 `task_result_v1` 做本地结构校验，并在输出中附带 `contractValidation`
 
 ---
 
@@ -117,13 +118,15 @@ node scripts/run_remote_digestion.mjs run
 2. 本地生成增量 payload
 3. 本地生成 digestion prompt
 4. 远程调用本机 gateway `127.0.0.1:18789`
-5. 成功后由控制器侧写回 `digestion_state.json`
+5. 控制器侧校验 agent 返回是否符合 `task_result_v1`
+6. 成功后由控制器侧写回 `digestion_state.json`
 
 当前状态：
 
 - 已验证无新增条目时返回 `noop`
 - 下一步主线是验证新增条目可真实写入 `memory/YYYY-MM-DD.md`
 - 已验证 `digestion_state.json` 可由控制器侧推进，而不是继续依赖 agent 写时间戳
+- 当前即使返回 contract 仍有偏差，控制器也会把校验错误显式带出，方便继续收口 schema
 
 ### 2.4 包装成本地稳定入口
 
