@@ -141,3 +141,67 @@ scripts/qmd_run_eval.sh \
 如果结论明确，再补一份：
 
 - [qmd_phase42_mission_log_results_2026-03-03.md](/Users/jungle/Desktop/dev/vibe-os/docs/archive/2026-03/qmd_phase42_mission_log_results_2026-03-03.md)
+
+---
+
+## 9. 2026-03-04 实测记录（search-only）
+
+本轮严格保持：
+
+- `memory.qmd.searchMode = "search"`
+- 不触碰 query mode
+
+执行顺序：
+
+1. 临时移除 `mission-log` 白名单，跑 baseline：
+
+```bash
+scripts/qmd_run_eval.sh \
+  --label search-baseline-no-mission-log \
+  --instance-root /Users/kris/instances/vibe-os \
+  --output .logs/qmd-eval/search-baseline-no-mission-log.json \
+  --force-reindex
+```
+
+2. 恢复 `mission-log` 白名单，跑 candidate + compare：
+
+```bash
+scripts/qmd_run_eval.sh \
+  --label mission-log-candidate \
+  --instance-root /Users/kris/instances/vibe-os \
+  --force-reindex \
+  --base-report .logs/qmd-eval/search-baseline-no-mission-log.json \
+  --compare-output .logs/qmd-eval/search-vs-mission-log.md
+```
+
+产物：
+
+- `.logs/qmd-eval/search-baseline-no-mission-log.json`
+- `.logs/qmd-eval/mission-log-candidate.json`
+- `.logs/qmd-eval/search-vs-mission-log.md`
+
+`openclaw memory status --agent main --deep`（候选后）：
+
+- Provider: `qmd`
+- Indexed: `6/8 files · 6 chunks`
+- Dirty: `no`
+- Store: `~/instances/vibe-os/state/agents/main/qmd/xdg-cache/qmd/index.sqlite`
+
+对比结论（`search-vs-mission-log.md`）：
+
+- Improved: `0`
+- Regressed: `0`
+- Changed: `2`
+- Same: `6`
+- Changed query：`remote digestion`、`验证 remote runner`
+
+人工判读：
+
+- `验证 remote runner`：从 `No matches` 变为命中 `memory/mission-log.md`，属正向改善
+- `remote digestion`：新增 `mission-log` 命中并顶到 knowledge 结果前，任务线索更明显
+- `run_remote_digestion.mjs`：仍然 `No matches`
+- `AI Native` / `Crypto Markdown` / `Memory as File System` / `OpenClaw gateway`：未见污染（保持 same）
+
+本轮验收判断：
+
+- 在 search 模式下，`mission_log` 候选结果偏正面，可继续保留观察
