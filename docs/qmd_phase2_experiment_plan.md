@@ -296,6 +296,7 @@ scripts/qmd_run_eval.sh \
 1. 从 `mission_log` 导出更高密度的 task-memory 子集，而不是整文件直灌
 2. 把“开放任务 / 跟进项 / 已完成事项”拆开，避免 TODO 语气挤占知识结果
 3. 保持 `search` 模式不变，只比较索引源切片策略
+4. 在 task-memory 中加入 query 锚点（如 `remote digestion`、`验证 remote runner`、`run_remote_digestion.mjs`）并复验首命中强度
 
 2026-03-04 基线复跑记录（部署机本机，QMD baseline refresh）：
 

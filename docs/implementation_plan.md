@@ -139,6 +139,7 @@
 - 已补 `qmd_eval_matrix.mjs` 的 `openclaw` 可执行路径收敛（支持 `--openclaw-bin` 与 `/opt/homebrew/bin/openclaw` fallback），避免部署机非交互 PATH 导致 `spawnSync openclaw ENOENT`
 - 2026-03-04 已完成 `search-only` 口径下的 `mission_log` 候选对比：`Changed 2 / Regressed 0`，当前判断可在 `search` 模式继续保留 `mission_log` 白名单观察
 - 2026-03-04 已完成 Phase 4.3 首轮 task-memory 切片评测：任务 query 可命中，但相对 `mission_log` 候选强度偏弱，当前不替换 live `mission_log` 直索引
+- 已进入 Phase 4.3 第二轮：优化 task-memory 蒸馏规则（紧凑输出 + query anchors）后复验
 
 对应文档：
 

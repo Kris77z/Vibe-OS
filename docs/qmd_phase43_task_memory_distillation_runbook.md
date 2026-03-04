@@ -26,8 +26,8 @@
 ```bash
 cd /Users/kris/Desktop/Dev/Vibe-OS
 /opt/homebrew/bin/node scripts/distill_mission_log_to_task_memory.mjs \
-  --mission-log memory/mission_log.md \
-  --output memory/task_memory.md
+  --mission-log /Users/kris/instances/vibe-os/workspace/memory/mission_log.md \
+  --output /Users/kris/instances/vibe-os/workspace/memory/task_memory.md
 ```
 
 预期输出：
@@ -64,6 +64,11 @@ scripts/qmd_run_task_memory_eval.sh \
   --instance-root /Users/kris/instances/vibe-os \
   --force-reindex
 ```
+
+说明：
+
+- 一键脚本默认会读取 `<instance-root>/workspace/memory/mission_log.md`
+- 并写入 `<instance-root>/workspace/memory/task_memory.md`
 
 对应脚本：
 
@@ -175,3 +180,9 @@ scripts/qmd_run_task_memory_eval.sh \
 - task-memory 候选可以命中任务线索，但首轮强度暂未达到“不弱于 mission-log-candidate”的通过标准
 - 防回归 query（`AI Native / Crypto Markdown / Memory as File System / OpenClaw gateway`）未见污染
 - live 已回滚到 `mission-log` 白名单（`search` 模式保持不变），task-memory 继续作为下一轮 distillation 迭代方向
+
+下一轮（v2）调整点：
+
+- 蒸馏文件改为更紧凑结构，减少模板噪音
+- 为每条任务自动附加 query anchors（例如 `remote digestion`、`remote runner`、`run_remote_digestion.mjs`）
+- 复验命令保持不变，继续使用 `scripts/qmd_run_task_memory_eval.sh`

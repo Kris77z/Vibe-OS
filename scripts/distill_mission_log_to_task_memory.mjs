@@ -35,6 +35,7 @@ function parseArgs(argv) {
     includeCompleted: false,
     maxOpen: 50,
     maxCompleted: 20,
+    includeEntryAnchors: true,
   };
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -73,6 +74,14 @@ function parseArgs(argv) {
         options.maxCompleted = parsePositiveInteger(next, "--max-completed");
         index += 1;
         break;
+      case "include-entry-anchors":
+        if (next && !next.startsWith("--")) {
+          options.includeEntryAnchors = parseBoolean(next, true);
+          index += 1;
+        } else {
+          options.includeEntryAnchors = true;
+        }
+        break;
       case "help":
         printHelp();
         process.exit(0);
@@ -89,6 +98,7 @@ function printHelp() {
   process.stdout.write(`Usage:
   node scripts/distill_mission_log_to_task_memory.mjs [--mission-log PATH] [--output PATH]
        [--include-completed[=true|false]] [--max-open N] [--max-completed N]
+       [--include-entry-anchors[=true|false]]
 
 Purpose:
   Distill low-noise task memory from mission_log checklist items into task_memory.md.
@@ -144,10 +154,87 @@ function parseMissionItems(content) {
       const text = cleanTaskText(todoMatch[1]);
       if (!text) continue;
       openItems.push({ text, line: lineIndex + 1 });
+      continue;
+    }
+
+    const plainTodoMatch = line.match(/^\s*(?:todo|待办)\s*[:：]\s*(.+)$/i);
+    if (plainTodoMatch) {
+      const text = cleanTaskText(plainTodoMatch[1]);
+      if (!text) continue;
+      openItems.push({ text, line: lineIndex + 1 });
     }
   }
 
   return { openItems, completedItems };
+}
+
+function uniq(items) {
+  return Array.from(new Set(items.filter(Boolean)));
+}
+
+function splitWordLikeToken(token) {
+  return String(token || "")
+    .split(/[_./-]+/)
+    .map((part) => part.trim().toLowerCase())
+    .filter((part) => part.length >= 3);
+}
+
+function extractTaskAnchors(taskText) {
+  const text = String(taskText || "");
+  const lower = text.toLowerCase();
+  const anchors = [];
+
+  const rawTokens = lower.match(/[a-z0-9][a-z0-9_.-]{2,}/g) || [];
+  for (const token of rawTokens) {
+    anchors.push(token);
+    anchors.push(...splitWordLikeToken(token));
+  }
+
+  if (lower.includes("remote") && lower.includes("digestion")) {
+    anchors.push("remote digestion");
+  }
+  if (lower.includes("remote") && lower.includes("runner")) {
+    anchors.push("remote runner");
+  }
+  if (lower.includes("run_remote_digestion")) {
+    anchors.push("run_remote_digestion.mjs");
+    anchors.push("remote digestion");
+    anchors.push("remote runner");
+  }
+  if (lower.includes("openclaw")) {
+    anchors.push("openclaw");
+  }
+  if (lower.includes("cron")) {
+    anchors.push("cron");
+  }
+  if (text.includes("验证") && lower.includes("runner")) {
+    anchors.push("验证 remote runner");
+  }
+  if (text.includes("远程")) {
+    anchors.push("远程");
+    anchors.push("remote");
+  }
+  if (text.includes("消化") || lower.includes("digestion")) {
+    anchors.push("消化");
+    anchors.push("digestion");
+  }
+
+  return uniq(
+    anchors
+      .map((item) => String(item || "").trim())
+      .filter((item) => item.length >= 2),
+  );
+}
+
+function buildGlobalAnchors(openItems, completedItems, includeCompleted) {
+  const scopedItems = includeCompleted
+    ? [...openItems, ...completedItems]
+    : [...openItems];
+  const all = [];
+  for (const item of scopedItems) {
+    all.push(...extractTaskAnchors(item.text));
+  }
+  return uniq(all).slice(0, 120);
 }
 
 function dedupeItems(items, limit) {
@@ -170,13 +257,19 @@ function renderTaskMemory({
   openItems,
   completedItems,
   includeCompleted,
+  includeEntryAnchors,
 }) {
+  const globalAnchors = buildGlobalAnchors(
+    openItems,
+    completedItems,
+    includeCompleted,
+  );
   const lines = [];
-  lines.push("# Task Memory (Mission Log Distilled)");
+  lines.push("# Task Memory");
   lines.push("");
   lines.push(`> Generated at: ${new Date().toISOString()}`);
   lines.push(`> Source: ${sourcePathLabel}`);
-  lines.push("> Purpose: low-noise task retrieval context distilled from mission_log checklist entries.");
+  lines.push("> Purpose: retrieval-focused distilled task context from mission_log.");
   lines.push("");
 
   lines.push("## Open Tasks");
@@ -186,6 +279,12 @@ function renderTaskMemory({
   } else {
     for (const item of openItems) {
       lines.push(`- ${item.text}`);
+      if (includeEntryAnchors) {
+        const anchors = extractTaskAnchors(item.text);
+        if (anchors.length > 0) {
+          lines.push(`  - anchors: ${anchors.join(" | ")}`);
+        }
+      }
     }
   }
   lines.push("");
@@ -198,15 +297,24 @@ function renderTaskMemory({
     } else {
       for (const item of completedItems) {
         lines.push(`- ${item.text}`);
+        if (includeEntryAnchors) {
+          const anchors = extractTaskAnchors(item.text);
+          if (anchors.length > 0) {
+            lines.push(`  - anchors: ${anchors.join(" | ")}`);
+          }
+        }
       }
     }
     lines.push("");
   }
 
-  lines.push("## Notes");
+  lines.push("## Search Anchors");
   lines.push("");
-  lines.push("- This file is generated. Edit mission_log first, then regenerate.");
-  lines.push("- Keep mission_log as task ledger; keep this file as retrieval-focused digest.");
+  if (globalAnchors.length === 0) {
+    lines.push("- (none)");
+  } else {
+    lines.push(`- ${globalAnchors.join(" | ")}`);
+  }
   lines.push("");
 
   return `${lines.join("\n")}\n`;
@@ -230,6 +338,7 @@ function main() {
     openItems,
     completedItems,
     includeCompleted: options.includeCompleted,
+    includeEntryAnchors: options.includeEntryAnchors,
   });
 
   const before = fs.existsSync(outputPath) ? fs.readFileSync(outputPath, "utf8") : "";
@@ -250,6 +359,7 @@ function main() {
         openCount: openItems.length,
         completedCount: completedItems.length,
         includeCompleted: options.includeCompleted,
+        includeEntryAnchors: options.includeEntryAnchors,
       },
       null,
       2,
