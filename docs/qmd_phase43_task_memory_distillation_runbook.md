@@ -123,3 +123,55 @@ scripts/qmd_run_eval.sh \
 
 - [qmd_phase2_experiment_plan.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_phase2_experiment_plan.md)
 - [implementation_plan.md](/Users/jungle/Desktop/dev/vibe-os/docs/implementation_plan.md)
+
+---
+
+## 6. 2026-03-04 首轮实测结果（部署机本机）
+
+说明：
+
+- 本机仓库与 live workspace 分离（仓库：`/Users/kris/Desktop/Dev/Vibe-OS`；live：`/Users/kris/instances/vibe-os/workspace`）
+- 因此本轮显式指定 distill 输入/输出为 live workspace 绝对路径
+
+执行命令：
+
+```bash
+scripts/qmd_run_task_memory_eval.sh \
+  --instance-root /Users/kris/instances/vibe-os \
+  --mission-log /Users/kris/instances/vibe-os/workspace/memory/mission_log.md \
+  --task-memory-output /Users/kris/instances/vibe-os/workspace/memory/task_memory.md \
+  --force-reindex
+```
+
+产物：
+
+- `.logs/qmd-eval/task-memory-candidate.json`
+- `.logs/qmd-eval/search-vs-task-memory.md`
+- `.logs/qmd-eval/mission-log-vs-task-memory.md`
+- live 文件：`/Users/kris/instances/vibe-os/workspace/memory/task_memory.md`
+
+结果摘要：
+
+- `search-baseline-no-mission-log` vs `task-memory-candidate`：
+  - `Improved 0 / Regressed 0 / Changed 6 / Same 2`
+- `mission-log-candidate` vs `task-memory-candidate`：
+  - `Improved 0 / Regressed 0 / Changed 6 / Same 2`
+- `openclaw memory status --agent main --deep`：
+  - `Indexed: 7/9 files · 7 chunks`
+
+重点 query 对比（mission-log vs task-memory）：
+
+- `remote digestion`：
+  - mission-log 首命中 `0.480 memory/mission-log.md`
+  - task-memory 首命中 `0.230 memory/task-memory.md`
+- `验证 remote runner`：
+  - mission-log 首命中 `0.760 memory/mission-log.md`
+  - task-memory 首命中 `0.530 memory/task-memory.md`
+- `run_remote_digestion.mjs`：
+  - 两者都仍是 `No matches`
+
+结论：
+
+- task-memory 候选可以命中任务线索，但首轮强度暂未达到“不弱于 mission-log-candidate”的通过标准
+- 防回归 query（`AI Native / Crypto Markdown / Memory as File System / OpenClaw gateway`）未见污染
+- live 已回滚到 `mission-log` 白名单（`search` 模式保持不变），task-memory 继续作为下一轮 distillation 迭代方向

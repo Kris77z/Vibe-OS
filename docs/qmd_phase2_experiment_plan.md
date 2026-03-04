@@ -270,12 +270,26 @@ scripts/qmd_run_eval.sh \
 - live 默认继续保持 `search`，不切 `query`
 - `mission_log` 白名单在 `search` 模式下继续保留观察
 - 下一步优先做 `mission_log` 切片/去噪，再评估是否长期固化
+- Phase 4.3 首轮（task-memory）已完成；当前结论是“先不替换 mission_log 直索引”
 
 下一轮执行入口（Phase 4.3）：
 
 - 先用 [distill_mission_log_to_task_memory.mjs](/Users/jungle/Desktop/dev/vibe-os/scripts/distill_mission_log_to_task_memory.mjs) 生成 `memory/task_memory.md`
 - 用 [openclaw.vibe-os.instance.qmd-task-memory-overlay.example.json5](/Users/jungle/Desktop/dev/vibe-os/docs/openclaw.vibe-os.instance.qmd-task-memory-overlay.example.json5) 替换 `mission_log` 直索引
 - 按 [qmd_phase43_task_memory_distillation_runbook.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_phase43_task_memory_distillation_runbook.md) 跑对比评测
+
+2026-03-04 Phase 4.3 首轮结果（见 [qmd_phase43_task_memory_distillation_runbook.md](/Users/jungle/Desktop/dev/vibe-os/docs/qmd_phase43_task_memory_distillation_runbook.md#L128)）：
+
+- 对比口径一：`search-baseline-no-mission-log` vs `task-memory-candidate`
+  - `Improved 0 / Regressed 0 / Changed 6 / Same 2`
+- 对比口径二：`mission-log-candidate` vs `task-memory-candidate`
+  - `Improved 0 / Regressed 0 / Changed 6 / Same 2`
+- 任务 query 命中情况：
+  - `remote digestion`、`验证 remote runner` 在 task-memory 下可命中
+  - 但相对 mission-log 候选，首命中分值偏低（强度暂弱）
+  - `run_remote_digestion.mjs` 仍然 `No matches`
+- 防回归 query（`AI Native` / `Crypto Markdown` / `Memory as File System` / `OpenClaw gateway`）未见污染
+- 决策：live 继续维持 `search + mission_log`；task-memory 作为下一轮切片规则优化方向
 
 推荐下一轮方向：
 

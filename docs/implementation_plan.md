@@ -138,6 +138,7 @@
 - 已补 live 验证结论，明确下一阶段主问题是中文召回与白名单扩展
 - 已补 `qmd_eval_matrix.mjs` 的 `openclaw` 可执行路径收敛（支持 `--openclaw-bin` 与 `/opt/homebrew/bin/openclaw` fallback），避免部署机非交互 PATH 导致 `spawnSync openclaw ENOENT`
 - 2026-03-04 已完成 `search-only` 口径下的 `mission_log` 候选对比：`Changed 2 / Regressed 0`，当前判断可在 `search` 模式继续保留 `mission_log` 白名单观察
+- 2026-03-04 已完成 Phase 4.3 首轮 task-memory 切片评测：任务 query 可命中，但相对 `mission_log` 候选强度偏弱，当前不替换 live `mission_log` 直索引
 
 对应文档：
 
@@ -165,7 +166,7 @@
 - QMD enablement 基线已完成
 - `query` 不适合当前默认交互路径
 - `search` 模式下可继续保留 `mission_log` 白名单观察
-- 下一步进入 Phase 4.3：先做 `mission_log -> task_memory.md` 文件级切片实验，再决定是否替换 `mission_log` 直索引
+- Phase 4.3 首轮实验已完成：`task_memory` 暂未达到替换 `mission_log` 的通过标准，后续继续优化切片规则后再复验
 - 后续不再继续扩自定义 retrieval 架构，主线改为把 digestion 输出收敛到 OpenClaw 官方 memory 层
 
 #### E. OpenClaw 官方 Memory 层收敛
