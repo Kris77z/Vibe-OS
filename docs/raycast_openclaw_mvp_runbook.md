@@ -74,6 +74,7 @@ npm run dev
 - `Dump SSH Target`
 - `Dump SSH Key Path`
 - `Dump Workspace Root`
+- `Dump Script Path`
 - `Dump SSH Timeout Sec`
 
 建议值：
@@ -84,6 +85,7 @@ Agent ID: main
 Dump SSH Target: kris@annkimac.tail7f9f42.ts.net
 Dump SSH Key Path: ~/.ssh/id_ed25519_vibe_os_deploy
 Dump Workspace Root: /Users/kris/instances/vibe-os/workspace
+Dump Script Path: /Users/kris/Desktop/Dev/Vibe-OS/scripts/append_braindump_entry.mjs
 Dump SSH Timeout Sec: 8
 ```
 
@@ -114,6 +116,7 @@ Dump SSH Timeout Sec: 8
 备注：
 
 - `倾倒到 Vibe-OS` 现在通过远程脚本 [append_braindump_entry.mjs](/Users/jungle/Desktop/dev/vibe-os/scripts/append_braindump_entry.mjs) 落盘。
+- 当前口径采用单一路径约定：Dump Script Path 必须显式指向部署机脚本绝对路径，不再依赖多路径探测。
 - 脚本会做并发锁、末尾换行补齐和 size 增长校验，避免“被覆盖成单条”回归。
 
 ### 用 Vibe-OS 改写

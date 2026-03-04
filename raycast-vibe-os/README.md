@@ -20,6 +20,7 @@ Private Raycast front-end for the remote `OpenClaw`-backed Vibe-OS brain.
 - `Dump SSH Target`
 - `Dump SSH Key Path`
 - `Dump Workspace Root`
+- `Dump Script Path`
 - `Dump SSH Timeout Sec`
 
 Recommended local value for `Gateway Base URL`:
@@ -40,6 +41,13 @@ ssh -N -L 28789:127.0.0.1:18789 kris@annkimac.tail7f9f42.ts.net
 2. Open Raycast and import or develop this extension from `raycast-vibe-os/`.
 3. Fill the extension preferences (gateway + dump SSH fields).
 4. Run `问问 Vibe-OS` or `倾倒到 Vibe-OS`.
+
+Recommended dump path values for the current deployment machine:
+
+```text
+Dump Workspace Root: /Users/kris/instances/vibe-os/workspace
+Dump Script Path: /Users/kris/Desktop/Dev/Vibe-OS/scripts/append_braindump_entry.mjs
+```
 
 ## Development
 

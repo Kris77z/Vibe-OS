@@ -73,6 +73,15 @@
       "placeholder": "/Users/kris/instances/vibe-os/workspace"
     },
     {
+      "name": "dumpRemoteScriptPath",
+      "title": "Dump Script Path",
+      "description": "部署机统一写入器脚本绝对路径",
+      "type": "textfield",
+      "required": false,
+      "default": "/Users/kris/Desktop/Dev/Vibe-OS/scripts/append_braindump_entry.mjs",
+      "placeholder": "/Users/kris/Desktop/Dev/Vibe-OS/scripts/append_braindump_entry.mjs"
+    },
+    {
       "name": "dumpSshConnectTimeoutSec",
       "title": "Dump SSH Timeout Sec",
       "description": "倾倒写盘 SSH 连接超时秒数",

@@ -5,12 +5,15 @@ import { getOpenClawPreferences } from "./openclaw";
 const DEFAULT_DUMP_SSH_TARGET = "kris@annkimac.tail7f9f42.ts.net";
 const DEFAULT_DUMP_SSH_KEY_PATH = "~/.ssh/id_ed25519_vibe_os_deploy";
 const DEFAULT_DUMP_WORKSPACE_ROOT = "/Users/kris/instances/vibe-os/workspace";
+const DEFAULT_DUMP_SCRIPT_PATH =
+  "/Users/kris/Desktop/Dev/Vibe-OS/scripts/append_braindump_entry.mjs";
 const DEFAULT_SSH_CONNECT_TIMEOUT_SEC = 8;
 
 interface DumpWriterConfig {
   sshTarget: string;
   sshKeyPath: string;
   remoteWorkspaceRoot: string;
+  remoteScriptPath: string;
   sshConnectTimeoutSec: number;
 }
 
@@ -44,6 +47,8 @@ function resolveConfig(): DumpWriterConfig {
     remoteWorkspaceRoot:
       String(prefs.dumpRemoteWorkspaceRoot || "").trim() ||
       DEFAULT_DUMP_WORKSPACE_ROOT,
+    remoteScriptPath:
+      String(prefs.dumpRemoteScriptPath || "").trim() || DEFAULT_DUMP_SCRIPT_PATH,
     sshConnectTimeoutSec:
       Number.isFinite(timeout) && timeout > 0
         ? timeout
@@ -101,10 +106,14 @@ export async function appendBraindumpEntry(
   const config = resolveConfig();
   const normalizedContent = normalizeBraindumpContent(content);
   const remoteBraindumpPath = `${config.remoteWorkspaceRoot}/memory/braindump.md`;
-  const remoteAppendScriptPath = `${config.remoteWorkspaceRoot}/scripts/append_braindump_entry.mjs`;
+  const remoteAppendScriptPath = config.remoteScriptPath;
   const contentB64 = Buffer.from(normalizedContent, "utf8").toString("base64");
   const remoteCommand = [
     "set -euo pipefail",
+    `if [ ! -f ${shellQuote(remoteAppendScriptPath)} ]; then`,
+    '  echo "SCRIPT_NOT_FOUND: append_braindump_entry.mjs not found on remote host" >&2',
+    "  exit 127",
+    "fi",
     "if command -v node >/dev/null 2>&1; then",
     '  RUNTIME="node"',
     "elif command -v bun >/dev/null 2>&1; then",
@@ -168,6 +177,7 @@ export function toDumpWriteError(error: unknown): string {
   if (message.includes("Permission denied")) return "SSH 鉴权失败，请检查 key 和远程权限。";
   if (message.includes("Connection timed out")) return "SSH 连接超时，请检查隧道或网络。";
   if (message.includes("Could not resolve hostname")) return "远程主机不可解析，请检查 SSH target。";
+  if (message.includes("SCRIPT_NOT_FOUND")) return "部署机缺少 append_braindump_entry.mjs，请先更新代码。";
   if (message.includes("RUNTIME_NOT_FOUND")) return "部署机缺少 node/bun 运行时，请先安装后重试。";
   if (message.includes("LOCK_BUSY")) return "倾倒正在并发写入，稍后重试。";
   if (message.includes("APPEND_FAILED")) return message.replace(/^APPEND_FAILED:\s*/, "");

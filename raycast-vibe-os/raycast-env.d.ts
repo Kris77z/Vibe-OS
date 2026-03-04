@@ -20,6 +20,8 @@ type ExtensionPreferences = {
   "dumpSshKeyPath": string,
   /** Dump Workspace Root - 部署机 workspace 根路径（写 memory/braindump.md） */
   "dumpRemoteWorkspaceRoot": string,
+  /** Dump Script Path - 部署机统一写入器脚本绝对路径 */
+  "dumpRemoteScriptPath": string,
   /** Dump SSH Timeout Sec - 倾倒写盘 SSH 连接超时秒数 */
   "dumpSshConnectTimeoutSec": string
 }

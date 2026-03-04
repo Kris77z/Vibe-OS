@@ -9,6 +9,7 @@ export interface OpenClawPreferences {
   dumpSshTarget?: string;
   dumpSshKeyPath?: string;
   dumpRemoteWorkspaceRoot?: string;
+  dumpRemoteScriptPath?: string;
   dumpSshConnectTimeoutSec?: string;
 }
 
