@@ -19,6 +19,7 @@ Raycast Dump
 
 - 2026-03-03 已通过远程本地 API 验证
 - 2026-03-03 已通过 Raycast 实测验证
+- 2026-03-04 已完成本机 Raycast live E2E 双次追加写入验证（部署机落盘确认）
 - 本文档后续主要用于回归检查，而不是首次验证
 
 ---
@@ -219,6 +220,19 @@ openclaw agent --agent main --message "测试写盘：CLI 二次交叉验证 202
 
 - Raycast 侧等待响应仍偏慢
 - 时间戳格式目前存在不一致，后续应继续观察
+
+### 2026-03-04 本次验证结果
+
+结果：通过
+
+已确认：
+
+- 部署机写入器脚本路径固定为 `/Users/kris/Desktop/Dev/Vibe-OS/scripts/append_braindump_entry.mjs`
+- 写入脚本参数契约为 `--file`（不是 `--workspace-root`）
+- 部署机非交互 shell 下 `node` 不在 `PATH`，但 fallback 到 `/opt/homebrew/bin/node` 可稳定写入
+- 本机 Raycast `倾倒到 Vibe-OS` 连续两次成功，部署机 `memory/braindump.md` 新增：
+  - `[2026-03-04T06:12:39Z] e2e 测试 01`
+  - `[2026-03-04T06:12:44Z] e2e 测试 01`
 
 ### 判定为通过
 

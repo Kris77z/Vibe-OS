@@ -79,11 +79,16 @@
 - 已正式放弃 `SuperCmd` 作为当前桌面主入口
 - 已完成 `Ask / Dump / Rewrite` 三命令 MVP
 - 已补中文错误提示、Ask session reset、Dump contract 收口
+- 2026-03-04 已完成 dump 写盘链路 live E2E 双次追加验证（commit `b58e40a`）
+- 已确认部署机采用单一路径契约：`Dump Script Path -> /Users/kris/Desktop/Dev/Vibe-OS/scripts/append_braindump_entry.mjs`
+- 已确认部署机 runtime fallback 可命中 `/opt/homebrew/bin/node`，规避非交互 shell `PATH` 差异
 
 对应文档：
 
 - [raycast_openclaw_replan.md](/Users/jungle/Desktop/dev/vibe-os/docs/raycast_openclaw_replan.md)
 - [phase_c_and_digestion_plan.md](/Users/jungle/Desktop/dev/vibe-os/docs/phase_c_and_digestion_plan.md)
+- [raycast_openclaw_mvp_runbook.md](/Users/jungle/Desktop/dev/vibe-os/docs/raycast_openclaw_mvp_runbook.md)
+- [braindump_write_validation_runbook.md](/Users/jungle/Desktop/dev/vibe-os/docs/braindump_write_validation_runbook.md)
 
 对应代码：
 

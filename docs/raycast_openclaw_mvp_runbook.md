@@ -4,11 +4,19 @@
 
 ## 0. 当前验证状态
 
-截至 2026-03-02，这条链路已经在本机实测通过：
+截至 2026-03-04，这条链路已经在本机与部署机联动实测通过：
 
 - `问问 Vibe-OS` 成功返回
 - `倾倒到 Vibe-OS` 改为 SSH 直写 `memory/braindump.md`，并返回本地短确认句
 - `用 Vibe-OS 改写` 成功返回改写结果
+
+2026-03-04 补充验收（commit `b58e40a`）：
+
+- 部署机脚本路径固定为 `/Users/kris/Desktop/Dev/Vibe-OS/scripts/append_braindump_entry.mjs`
+- 部署机非交互 shell 下 `node` 不在 `PATH`，写入器 runtime fallback 成功命中 `/opt/homebrew/bin/node`
+- `倾倒到 Vibe-OS` 本机 E2E 连续两次成功，部署机 `memory/braindump.md` 新增：
+  - `[2026-03-04T06:12:39Z] e2e 测试 01`
+  - `[2026-03-04T06:12:44Z] e2e 测试 01`
 
 因此这份 runbook 现在不只是计划文档，也是当前可复用的成功路径。
 
